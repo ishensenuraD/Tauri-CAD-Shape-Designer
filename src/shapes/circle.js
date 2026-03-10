@@ -2,8 +2,18 @@
 export const circleGeometry = {
   // Generate SVG path for circle
   generatePath: (radius) => {
-    const diameter = radius * 2;
-    return `M ${radius} 0 A ${radius} ${radius} 0 0 1 ${radius} ${diameter} A ${radius} ${radius} 0 0 1 ${radius} 0`;
+    // Create a circle using line segments (simpler than arc commands)
+    const segments = 32; // Number of line segments to approximate circle
+    const points = [];
+    
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * 2 * Math.PI;
+      const x = radius + radius * Math.cos(angle);
+      const y = radius + radius * Math.sin(angle);
+      points.push(`${i === 0 ? 'M' : 'L'} ${x} ${y}`);
+    }
+    
+    return points.join(' ') + ' Z';
   },
 
   // Alternative: Use circle element for better performance
@@ -46,7 +56,22 @@ export const circleGeometry = {
     };
   },
 
-  // Get key points for dimension labels
+  // Get vertices for dimension labels
+  getVertices: (radius) => {
+    // Return key points around the circle for reference
+    const points = [];
+    const numPoints = 8; // 8 points around the circle
+    
+    for (let i = 0; i < numPoints; i++) {
+      const angle = (i / numPoints) * 2 * Math.PI;
+      points.push({
+        x: radius + radius * Math.cos(angle),
+        y: radius + radius * Math.sin(angle)
+      });
+    }
+    
+    return points;
+  },
   getDimensionPoints: (radius) => {
     const diameter = radius * 2;
     return {

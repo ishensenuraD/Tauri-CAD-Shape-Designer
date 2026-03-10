@@ -207,20 +207,23 @@ export const pathUtils = {
   // Parse SVG path string into commands
   parsePath: (pathString) => {
     const commands = [];
-    const regex = /([MLA])([^MLA]*)/g;
+    // More flexible regex that handles arc commands better
+    const regex = /([MLAZ])([^MLAZ]*)/g;
     let match;
     
     while ((match = regex.exec(pathString)) !== null) {
       const type = match[1];
-      const coords = match[2].trim().split(/\s+/).map(Number);
+      const coordStr = match[2].trim();
       
       if (type === 'M' || type === 'L') {
+        const coords = coordStr.split(/\s+/).map(Number);
         commands.push({
           type,
           x: coords[0],
           y: coords[1]
         });
       } else if (type === 'A') {
+        const coords = coordStr.split(/\s+/).map(Number);
         commands.push({
           type,
           rx: coords[0],
@@ -230,6 +233,10 @@ export const pathUtils = {
           sweepFlag: coords[4],
           x: coords[5],
           y: coords[6]
+        });
+      } else if (type === 'Z') {
+        commands.push({
+          type: 'Z'
         });
       }
     }
@@ -244,6 +251,8 @@ export const pathUtils = {
         return `${command.type} ${command.x} ${command.y}`;
       } else if (command.type === 'A') {
         return `${command.type} ${command.rx} ${command.ry} ${command.xAxisRotation} ${command.largeArcFlag} ${command.sweepFlag} ${command.x} ${command.y}`;
+      } else if (command.type === 'Z') {
+        return 'Z';
       }
       return '';
     }).join(' ');

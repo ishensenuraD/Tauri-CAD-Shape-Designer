@@ -104,10 +104,10 @@ export const triangleGeometry = {
     if (base > 10000) errors.push('Base must be less than 10000mm');
     if (height > 10000) errors.push('Height must be less than 10000mm');
     
-    // Check if triangle is geometrically possible
-    const maxPossibleHeight = (base / 2) * Math.tan((angle * Math.PI) / 360);
-    if (height > maxPossibleHeight * 2) {
-      errors.push('Height is too large for the given base and angle');
+    // Check if triangle is geometrically possible (relaxed validation)
+    // For isosceles triangle, any positive height should work
+    if (height > base * 2) {
+      errors.push('Height is too large for the given base');
     }
     
     return {
