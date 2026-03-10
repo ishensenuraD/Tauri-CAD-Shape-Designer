@@ -1,0 +1,1 @@
+// ShapeLibrary component placeholder

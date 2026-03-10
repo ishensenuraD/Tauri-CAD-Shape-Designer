@@ -1,0 +1,1 @@
+// ShapeEditor component placeholder
