@@ -12,7 +12,8 @@ const initialState = {
     flipY: false
   },
   selectedShapeType: 'rectangle',
-  availableShapes: ['rectangle', 'circle', 'triangle', 'lshape', 'trapezoid']
+  availableShapes: ['rectangle', 'circle', 'triangle', 'lshape', 'trapezoid'],
+  showDimensions: false,
 };
 
 const shapeSlice = createSlice({
@@ -58,6 +59,9 @@ const shapeSlice = createSlice({
     setFlipY: (state, action) => {
       state.currentShape.flipY = action.payload;
     },
+    toggleDimensions: (state) => {
+      state.showDimensions = !state.showDimensions;
+    },
     resetShape: (state) => {
       return initialState;
     }
@@ -70,6 +74,7 @@ export const {
   setRotation,
   setFlipX,
   setFlipY,
+  toggleDimensions,
   resetShape
 } = shapeSlice.actions;
 

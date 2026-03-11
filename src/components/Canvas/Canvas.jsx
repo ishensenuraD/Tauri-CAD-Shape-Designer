@@ -1,7 +1,67 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import SVGCanvas from './SVGCanvas.jsx';
-import { shapeUtils } from '../../shapes/index.js';
+import CanvasRenderer from './CanvasRenderer.jsx';
+
+// Simple frontend validation utilities
+const validateShapeParameters = (shapeType, parameters) => {
+  const errors = [];
+  
+  if (!shapeType || !parameters) {
+    errors.push('Shape type and parameters are required');
+    return { isValid: false, errors };
+  }
+
+  // Basic validation for all shapes
+  Object.entries(parameters).forEach(([key, value]) => {
+    if (typeof value !== 'number' || value <= 0) {
+      errors.push(`${key} must be a positive number`);
+    }
+    if (value > 10000) {
+      errors.push(`${key} must be less than 10000mm`);
+    }
+  });
+
+  // Shape-specific validation
+  switch (shapeType) {
+    case 'triangle':
+      if (parameters.angle !== undefined) {
+        if (parameters.angle <= 0 || parameters.angle >= 180) {
+          errors.push('Angle must be between 0 and 180 degrees');
+        }
+      }
+      break;
+    case 'lshape':
+      if (parameters.innerWidth >= parameters.outerWidth) {
+        errors.push('Inner width must be less than outer width');
+      }
+      if (parameters.innerHeight >= parameters.outerHeight) {
+        errors.push('Inner height must be less than outer height');
+      }
+      break;
+    case 'trapezoid':
+      if (parameters.topWidth > parameters.bottomWidth * 2 || parameters.bottomWidth > parameters.topWidth * 2) {
+        errors.push('Top and bottom widths should be reasonably proportional');
+      }
+      break;
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
+// Display name mapping
+const getShapeDisplayName = (shapeType) => {
+  const names = {
+    rectangle: 'Rectangle',
+    circle: 'Circle',
+    triangle: 'Triangle',
+    lshape: 'L-Shape',
+    trapezoid: 'Trapezoid'
+  };
+  return names[shapeType] || shapeType;
+};
 
 const Canvas = () => {
   const { currentShape, selectedShapeType } = useSelector((state) => state.shape);
@@ -10,28 +70,28 @@ const Canvas = () => {
   const isShapeValid = () => {
     if (!selectedShapeType || !currentShape.parameters) return false;
     
-    const validation = shapeUtils.validateShape(selectedShapeType, currentShape.parameters);
+    const validation = validateShapeParameters(selectedShapeType, currentShape.parameters);
     return validation.isValid;
   };
 
   return (
     <div className="relative">
-      {/* Main SVG Canvas */}
+      {/* Main Canvas Renderer */}
       {isShapeValid() ? (
-        <SVGCanvas />
+        <CanvasRenderer />
       ) : (
         // Fallback placeholder for invalid shapes
-        <div className="border-2 border-gray-200 rounded-lg bg-gray-50 h-96 lg:h-[500px] flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-6xl mb-4 text-gray-400">
+        <div className={`canvas-wrapper ${isShapeValid() ? 'shape-preview-valid' : 'shape-preview-invalid'}`}>
+          <div className="canvas-placeholder">
+            <div className="canvas-placeholder-icon">
               {selectedShapeType === 'rectangle' && '▭'}
               {selectedShapeType === 'circle' && '○'}
               {selectedShapeType === 'triangle' && '△'}
               {selectedShapeType === 'lshape' && '└'}
               {selectedShapeType === 'trapezoid' && '▱'}
             </div>
-            <p className="text-gray-500 font-medium">{selectedShapeType || 'No Shape'}</p>
-            <p className="text-sm text-gray-400 mt-2">
+            <p className="canvas-placeholder-title">{selectedShapeType || 'No Shape'}</p>
+            <p className="canvas-placeholder-text">
               {currentShape.parameters ? 
                 Object.entries(currentShape.parameters)
                   .map(([key, value]) => `${key}: ${value}mm`)
@@ -39,7 +99,7 @@ const Canvas = () => {
                 'Select a shape to begin'
               }
             </p>
-            <div className="mt-4 text-xs text-gray-400">
+            <div className="canvas-placeholder-details">
               <p>Rotation: {currentShape.rotation}°</p>
               <p>Flip: X={currentShape.flipX ? 'Yes' : 'No'}, Y={currentShape.flipY ? 'Yes' : 'No'}</p>
             </div>
@@ -48,32 +108,21 @@ const Canvas = () => {
       )}
       
       {/* Canvas Info Bar */}
-      <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-        <div className="flex items-center space-x-4">
-          <span className="flex items-center">
-            <span className="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
-            {isShapeValid() ? 'Live Rendering' : 'Preview Mode'}
-          </span>
-          <span>Scale: 1:1</span>
+      <div className="canvas-info-bar">
+        <div className="canvas-info-left">
+          {selectedShapeType && currentShape.parameters && (
+            <span className="dimensions-display">
+              {selectedShapeType === 'rectangle' && `W: ${currentShape.parameters.width}mm × H: ${currentShape.parameters.height}mm`}
+              {selectedShapeType === 'circle' && `R: ${currentShape.parameters.radius}mm`}
+              {selectedShapeType === 'triangle' && `B: ${currentShape.parameters.base}mm × H: ${currentShape.parameters.height}mm`}
+              {selectedShapeType === 'lshape' && `W: ${currentShape.parameters.outerWidth}mm × H: ${currentShape.parameters.outerHeight}mm`}
+              {selectedShapeType === 'trapezoid' && `W: ${currentShape.parameters.topWidth}mm - ${currentShape.parameters.bottomWidth}mm × H: ${currentShape.parameters.height}mm`}
+            </span>
+          )}
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-xs bg-cad-blue text-white px-2 py-1 rounded">
-            {selectedShapeType ? shapeUtils.getDisplayName(selectedShapeType) : 'No Shape'}
-          </span>
-        </div>
-      </div>
-      
-      {/* Status Bar */}
-      <div className="mt-2 p-2 bg-gray-100 rounded text-xs text-gray-600">
-        <div className="flex items-center justify-between">
-          <span>
-            {isShapeValid() ? 
-              'Interactive SVG canvas with real-time shape rendering' : 
-              'Canvas ready for rendering in Phase 5'
-            }
-          </span>
-          <span className="text-cad-blue font-medium">
-            {isShapeValid() ? 'Interactive Mode' : 'Preview Mode'}
+        <div className="canvas-info-right">
+          <span className="badge badge-primary">
+            {selectedShapeType ? getShapeDisplayName(selectedShapeType) : 'No Shape'}
           </span>
         </div>
       </div>

@@ -3,47 +3,106 @@ import { useSelector } from 'react-redux';
 import ShapeLibrary from './components/ShapeLibrary/ShapeLibrary';
 import ShapeEditor from './components/ShapeEditor/ShapeEditor';
 import Canvas from './components/Canvas/Canvas';
+import ExportPanel from './components/Export/ExportPanel';
 import './App.css';
 
 function App() {
   const { currentShape, selectedShapeType } = useSelector((state) => state.shape);
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4 lg:p-6">
-      <div className="max-w-7xl mx-auto">
-        <header className="mb-6 lg:mb-8">
-          <h1 className="text-2xl lg:text-3xl font-bold text-cad-dark">Tauri CAD Shape Designer</h1>
-          <p className="text-gray-600 mt-2">Design parametric shapes with real-time preview</p>
-        </header>
-        
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 lg:gap-6">
-          {/* Left Sidebar - Shape Library */}
-          <div className="xl:col-span-1">
-            <div className="space-y-4">
-              <ShapeLibrary />
-              <ShapeEditor />
-            </div>
-          </div>
-          
-          {/* Main Content Area - Canvas */}
-          <div className="xl:col-span-3">
-            <div className="bg-white rounded-lg shadow-md p-4 lg:p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg lg:text-xl font-semibold text-cad-dark">Shape Preview</h2>
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-500">Shape:</span>
-                  <span className="px-2 py-1 bg-cad-blue text-white text-xs font-medium rounded">
-                    {selectedShapeType}
-                  </span>
+    <div className="app-container">
+      {/* Header */}
+      <header className="app-header">
+        <div className="app-header-content">
+          <div className="app-header-inner">
+            <div className="logo-section">
+              <div className="logo-container">
+                <div className="logo-icon">
+                  <svg className="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                  </svg>
+                </div>
+                <div className="logo-text">
+                  <h1>CAD Shape Designer</h1>
+                  <p>Professional Parametric Design</p>
                 </div>
               </div>
-              
-              <Canvas />
+            </div>
+            
+            <div className="header-status">
+              <div className="status-indicator">
+                <div className="status-dot"></div>
+                <span>Ready</span>
+              </div>
+              {selectedShapeType && (
+                <div className="selected-shape-badge">
+                  <span>{selectedShapeType}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </header>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Left Sidebar */}
+        <aside className="sidebar">
+          <div className="sidebar-content">
+            {/* Shape Library */}
+            <section>
+              <div className="section-header">
+                <div className="section-icon">
+                  <svg className="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <h2 className="section-title">Shape Library</h2>
+              </div>
+              <ShapeLibrary />
+            </section>
+
+            {/* Shape Editor */}
+            <section>
+              <div className="section-header">
+                <div className="section-icon">
+                  <svg className="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                </div>
+                <h2 className="section-title">Properties</h2>
+              </div>
+              <ShapeEditor />
+            </section>
+
+            {/* Export Panel */}
+            <section>
+              <div className="section-header">
+                <div className="section-icon">
+                  <svg className="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h2 className="section-title">Export</h2>
+              </div>
+              <ExportPanel />
+            </section>
+          </div>
+        </aside>
+
+        {/* Canvas Area */}
+        <section className="canvas-area">
+          <div className="canvas-container">
+            <div className="canvas-wrapper">
+              {/* Canvas Content */}
+              <div className="canvas-content">
+                <Canvas />
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   );
 }
 
