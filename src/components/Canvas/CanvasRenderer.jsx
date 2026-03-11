@@ -152,18 +152,32 @@ const CanvasRenderer = () => {
     const centerY = (canvas.height - renderedImage?.height || 0) / 2;
 
     shapeInfo.dimensions.forEach(dimension => {
+      // Apply scale factors to transform from SVG coordinates to image coordinates
+      const scaledStart = {
+        x: dimension.start_point.x * (shapeInfo.svg_to_image_scale_x || 1),
+        y: dimension.start_point.y * (shapeInfo.svg_to_image_scale_y || 1)
+      };
+      const scaledEnd = {
+        x: dimension.end_point.x * (shapeInfo.svg_to_image_scale_x || 1),
+        y: dimension.end_point.y * (shapeInfo.svg_to_image_scale_y || 1)
+      };
+      const scaledText = {
+        x: dimension.text_position.x * (shapeInfo.svg_to_image_scale_x || 1),
+        y: dimension.text_position.y * (shapeInfo.svg_to_image_scale_y || 1)
+      };
+
       // Transform dimension coordinates based on zoom and pan
       const transformedStart = {
-        x: centerX + dimension.start_point.x * zoom + pan.x,
-        y: centerY + dimension.start_point.y * zoom + pan.y
+        x: centerX + scaledStart.x * zoom + pan.x,
+        y: centerY + scaledStart.y * zoom + pan.y
       };
       const transformedEnd = {
-        x: centerX + dimension.end_point.x * zoom + pan.x,
-        y: centerY + dimension.end_point.y * zoom + pan.y
+        x: centerX + scaledEnd.x * zoom + pan.x,
+        y: centerY + scaledEnd.y * zoom + pan.y
       };
       const transformedText = {
-        x: centerX + dimension.text_position.x * zoom + pan.x,
-        y: centerY + dimension.text_position.y * zoom + pan.y
+        x: centerX + scaledText.x * zoom + pan.x,
+        y: centerY + scaledText.y * zoom + pan.y
       };
 
       // Draw dimension line

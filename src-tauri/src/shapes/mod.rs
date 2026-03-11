@@ -60,6 +60,9 @@ pub struct ShapeInfo {
     pub center: Point,
     pub vertices: Vec<Point>,
     pub dimensions: Vec<Dimension>,
+    pub render_offset: Point,
+    pub svg_to_image_scale_x: f64,
+    pub svg_to_image_scale_y: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -89,5 +92,5 @@ pub trait ShapeGeometry {
     fn get_center(&self, params: &ShapeParameters) -> Point;
     fn get_vertices(&self, params: &ShapeParameters) -> Vec<Point>;
     fn validate_parameters(&self, params: &ShapeParameters) -> ValidationError;
-    fn get_dimensions(&self, params: &ShapeParameters) -> Vec<Dimension>;
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension>;
 }

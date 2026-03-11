@@ -162,7 +162,7 @@ impl ShapeGeometry for LShapeGeometry {
         }
     }
 
-    fn get_dimensions(&self, params: &ShapeParameters) -> Vec<Dimension> {
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension> {
         let outer_width = params.outer_width.unwrap_or(120.0);
         let outer_height = params.outer_height.unwrap_or(80.0);
         let inner_width = params.inner_width.unwrap_or(40.0);
@@ -172,38 +172,38 @@ impl ShapeGeometry for LShapeGeometry {
         vec![
             // Outer width dimension (horizontal at top)
             Dimension {
-                start_point: Point { x: offset, y: offset },
-                end_point: Point { x: outer_width - offset, y: offset },
-                text_position: Point { x: outer_width / 2.0, y: offset - 10.0 },
+                start_point: Point { x: 0.0 + render_offset.x, y: -offset + render_offset.y },
+                end_point: Point { x: outer_width + render_offset.x, y: -offset + render_offset.y },
+                text_position: Point { x: outer_width / 2.0 + render_offset.x, y: -offset - 10.0 + render_offset.y },
                 value: outer_width,
                 label: format!("{:.0}mm", outer_width),
                 orientation: DimensionOrientation::Horizontal,
             },
             // Outer height dimension (vertical at left)
             Dimension {
-                start_point: Point { x: offset, y: offset },
-                end_point: Point { x: offset, y: outer_height - offset },
-                text_position: Point { x: offset - 15.0, y: outer_height / 2.0 },
+                start_point: Point { x: -offset + render_offset.x, y: 0.0 + render_offset.y },
+                end_point: Point { x: -offset + render_offset.x, y: outer_height + render_offset.y },
+                text_position: Point { x: -offset - 15.0 + render_offset.x, y: outer_height / 2.0 + render_offset.y },
                 value: outer_height,
                 label: format!("{:.0}mm", outer_height),
                 orientation: DimensionOrientation::Vertical,
             },
-            // Inner width dimension (horizontal inside)
+            // Bottom leg width dimension (horizontal at inner height)
             Dimension {
-                start_point: Point { x: inner_width + offset, y: inner_height + offset },
-                end_point: Point { x: outer_width - offset, y: inner_height + offset },
-                text_position: Point { x: (inner_width + outer_width) / 2.0, y: inner_height + offset + 15.0 },
-                value: outer_width - inner_width,
-                label: format!("{:.0}mm", outer_width - inner_width),
+                start_point: Point { x: 0.0 + render_offset.x, y: inner_height + offset + render_offset.y },
+                end_point: Point { x: outer_width + render_offset.x, y: inner_height + offset + render_offset.y },
+                text_position: Point { x: outer_width / 2.0 + render_offset.x, y: inner_height + offset + 15.0 + render_offset.y },
+                value: outer_width,
+                label: format!("{:.0}mm", outer_width),
                 orientation: DimensionOrientation::Horizontal,
             },
-            // Inner height dimension (vertical inside)
+            // Left leg height dimension (vertical at inner width)
             Dimension {
-                start_point: Point { x: inner_width + offset, y: inner_height + offset },
-                end_point: Point { x: inner_width + offset, y: outer_height - offset },
-                text_position: Point { x: inner_width + offset + 15.0, y: (inner_height + outer_height) / 2.0 },
-                value: outer_height - inner_height,
-                label: format!("{:.0}mm", outer_height - inner_height),
+                start_point: Point { x: inner_width + offset + render_offset.x, y: 0.0 + render_offset.y },
+                end_point: Point { x: inner_width + offset + render_offset.x, y: outer_height + render_offset.y },
+                text_position: Point { x: inner_width + offset + 15.0 + render_offset.x, y: outer_height / 2.0 + render_offset.y },
+                value: outer_height,
+                label: format!("{:.0}mm", outer_height),
                 orientation: DimensionOrientation::Vertical,
             },
         ]

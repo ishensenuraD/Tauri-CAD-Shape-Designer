@@ -87,26 +87,44 @@ impl ShapeGeometry for RectangleGeometry {
         }
     }
 
-    fn get_dimensions(&self, params: &ShapeParameters) -> Vec<Dimension> {
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension> {
         let width = params.width.unwrap_or(100.0);
         let height = params.height.unwrap_or(100.0);
-        let offset = 20.0; // Offset from edges for dimension placement
+        let offset = 20.0; // Offset from edges for text placement
         
         vec![
-            // Width dimension (horizontal, positioned inside near top)
+            // Width dimension (horizontal, above the shape)
             Dimension {
-                start_point: Point { x: offset, y: offset },
-                end_point: Point { x: width - offset, y: offset },
-                text_position: Point { x: width / 2.0, y: offset - 10.0 },
+                start_point: Point {
+                    x: 0.0 + render_offset.x,
+                    y: -offset + render_offset.y,
+                },
+                end_point: Point {
+                    x: width + render_offset.x,
+                    y: -offset + render_offset.y,
+                },
+                text_position: Point {
+                    x: width / 2.0 + render_offset.x,
+                    y: -offset - 10.0 + render_offset.y,
+                },
                 value: width,
                 label: format!("{:.0}mm", width),
                 orientation: DimensionOrientation::Horizontal,
             },
-            // Height dimension (vertical, positioned inside near left)
+            // Height dimension (vertical, left of the shape)
             Dimension {
-                start_point: Point { x: offset, y: offset },
-                end_point: Point { x: offset, y: height - offset },
-                text_position: Point { x: offset - 15.0, y: height / 2.0 },
+                start_point: Point {
+                    x: -offset + render_offset.x,
+                    y: 0.0 + render_offset.y,
+                },
+                end_point: Point {
+                    x: -offset + render_offset.x,
+                    y: height + render_offset.y,
+                },
+                text_position: Point {
+                    x: -offset - 15.0 + render_offset.x,
+                    y: height / 2.0 + render_offset.y,
+                },
                 value: height,
                 label: format!("{:.0}mm", height),
                 orientation: DimensionOrientation::Vertical,

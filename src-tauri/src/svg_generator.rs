@@ -29,6 +29,22 @@ impl SvgGenerator {
 
         let bounding_box = geometry.get_bounding_box(params);
         let center = geometry.get_center(params);
+        
+        // Calculate viewBox with padding
+        let padding = 50.0;
+        let view_box_width = bounding_box.width + 2.0 * padding;
+        let view_box_height = bounding_box.height + 2.0 * padding;
+        
+        // Calculate render offset - shape is positioned at (padding, padding) in viewBox
+        let render_offset = Point {
+            x: padding,
+            y: padding,
+        };
+        
+        // Calculate scale factors for coordinate transformation
+        // SVG viewBox maps to rendered image dimensions (800x500)
+        let svg_to_image_scale_x = 800.0 / view_box_width;
+        let svg_to_image_scale_y = 500.0 / view_box_height;
 
         Ok(ShapeInfo {
             shape_type: shape_type.to_string(),
@@ -39,7 +55,10 @@ impl SvgGenerator {
             perimeter: geometry.get_perimeter(params),
             center,
             vertices: geometry.get_vertices(params),
-            dimensions: geometry.get_dimensions(params),
+            dimensions: geometry.get_dimensions(params, &render_offset),
+            render_offset,
+            svg_to_image_scale_x,
+            svg_to_image_scale_y,
         })
     }
 

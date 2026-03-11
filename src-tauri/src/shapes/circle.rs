@@ -91,25 +91,25 @@ impl ShapeGeometry for CircleGeometry {
         }
     }
 
-    fn get_dimensions(&self, params: &ShapeParameters) -> Vec<Dimension> {
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension> {
         let radius = params.radius.unwrap_or(50.0);
-        let center = Point { x: radius, y: radius };
+        let center = Point { x: radius + render_offset.x, y: radius + render_offset.y };
         
         vec![
             // Radius dimension (horizontal from center to edge)
             Dimension {
                 start_point: center,
-                end_point: Point { x: radius * 2.0, y: radius },
-                text_position: Point { x: radius * 1.5, y: radius - 15.0 },
+                end_point: Point { x: radius * 2.0 + render_offset.x, y: radius + render_offset.y },
+                text_position: Point { x: radius * 1.5 + render_offset.x, y: radius - 15.0 + render_offset.y },
                 value: radius,
                 label: format!("R {:.0}mm", radius),
                 orientation: DimensionOrientation::Radial,
             },
             // Diameter dimension (vertical through center)
             Dimension {
-                start_point: Point { x: radius, y: 10.0 },
-                end_point: Point { x: radius, y: radius * 2.0 - 10.0 },
-                text_position: Point { x: radius + 15.0, y: radius },
+                start_point: Point { x: radius + render_offset.x, y: 10.0 + render_offset.y },
+                end_point: Point { x: radius + render_offset.x, y: radius * 2.0 - 10.0 + render_offset.y },
+                text_position: Point { x: radius + 15.0 + render_offset.x, y: radius + render_offset.y },
                 value: radius * 2.0,
                 label: format!("Ø {:.0}mm", radius * 2.0),
                 orientation: DimensionOrientation::Vertical,

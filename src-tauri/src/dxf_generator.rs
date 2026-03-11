@@ -78,6 +78,13 @@ impl DxfGenerator {
 
         let bounding_box = geometry.get_bounding_box(params);
         let center = geometry.get_center(params);
+        
+        // Calculate render offset - shape is positioned at (padding, padding) in viewBox
+        let padding = 50.0;
+        let render_offset = Point {
+            x: padding,
+            y: padding,
+        };
 
         Ok(ShapeInfo {
             shape_type: "custom".to_string(), // We'll set this properly in the calling method
@@ -88,7 +95,10 @@ impl DxfGenerator {
             perimeter: geometry.get_perimeter(params),
             center,
             vertices: geometry.get_vertices(params),
-            dimensions: geometry.get_dimensions(params),
+            dimensions: geometry.get_dimensions(params, &render_offset),
+            render_offset,
+            svg_to_image_scale_x: 1.0, // DXF doesn't have scaling issues
+            svg_to_image_scale_y: 1.0,
         })
     }
 

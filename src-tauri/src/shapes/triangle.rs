@@ -113,7 +113,7 @@ impl ShapeGeometry for TriangleGeometry {
         }
     }
 
-    fn get_dimensions(&self, params: &ShapeParameters) -> Vec<Dimension> {
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension> {
         let base = params.base.unwrap_or(100.0);
         let height = params.height.unwrap_or(100.0);
         let angle = params.angle.unwrap_or(60.0);
@@ -122,27 +122,27 @@ impl ShapeGeometry for TriangleGeometry {
         vec![
             // Base dimension (horizontal at bottom)
             Dimension {
-                start_point: Point { x: offset, y: height - offset },
-                end_point: Point { x: base - offset, y: height - offset },
-                text_position: Point { x: base / 2.0, y: height - offset + 15.0 },
+                start_point: Point { x: 0.0 + render_offset.x, y: height + render_offset.y },
+                end_point: Point { x: base + render_offset.x, y: height + render_offset.y },
+                text_position: Point { x: base / 2.0 + render_offset.x, y: height + offset + 5.0 + render_offset.y },
                 value: base,
                 label: format!("{:.0}mm", base),
                 orientation: DimensionOrientation::Horizontal,
             },
             // Height dimension (vertical from base to top)
             Dimension {
-                start_point: Point { x: offset, y: height - offset },
-                end_point: Point { x: offset, y: offset },
-                text_position: Point { x: offset - 15.0, y: height / 2.0 },
+                start_point: Point { x: 0.0 + render_offset.x, y: height + render_offset.y },
+                end_point: Point { x: 0.0 + render_offset.x, y: 0.0 + render_offset.y },
+                text_position: Point { x: -offset - 15.0 + render_offset.x, y: height / 2.0 + render_offset.y },
                 value: height,
                 label: format!("{:.0}mm", height),
                 orientation: DimensionOrientation::Vertical,
             },
             // Angle dimension (at top vertex)
             Dimension {
-                start_point: Point { x: base / 2.0 - 30.0, y: 30.0 },
-                end_point: Point { x: base / 2.0 + 30.0, y: 30.0 },
-                text_position: Point { x: base / 2.0, y: 15.0 },
+                start_point: Point { x: base / 2.0 - 30.0 + render_offset.x, y: -offset + render_offset.y },
+                end_point: Point { x: base / 2.0 + 30.0 + render_offset.x, y: -offset + render_offset.y },
+                text_position: Point { x: base / 2.0 + render_offset.x, y: -offset - 15.0 + render_offset.y },
                 value: angle,
                 label: format!("{:.0}°", angle),
                 orientation: DimensionOrientation::Angular,
