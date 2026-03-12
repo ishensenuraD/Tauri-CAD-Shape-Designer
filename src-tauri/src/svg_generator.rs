@@ -112,7 +112,7 @@ impl SvgGenerator {
 
             vertices: geometry.get_vertices(params),
 
-            dimensions: geometry.get_dimensions(params, &render_offset),
+            dimensions: geometry.get_dimensions(params, &render_offset, &Transform { rotation: 0.0, flip_x: false, flip_y: false }),
 
             render_offset,
 

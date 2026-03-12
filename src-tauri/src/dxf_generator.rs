@@ -95,7 +95,7 @@ impl DxfGenerator {
             perimeter: geometry.get_perimeter(params),
             center,
             vertices: geometry.get_vertices(params),
-            dimensions: geometry.get_dimensions(params, &render_offset),
+            dimensions: geometry.get_dimensions(params, &render_offset, &Transform { rotation: 0.0, flip_x: false, flip_y: false }),
             render_offset,
             svg_to_image_scale_x: 1.0, // DXF doesn't have scaling issues
             svg_to_image_scale_y: 1.0,
@@ -147,14 +147,17 @@ impl DxfGenerator {
             let dim_line_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Line(dim_line));
             drawing.add_entity(dim_line_entity);
 
-            // Add extension lines (perpendicular to dimension line)
-            self.add_extension_lines(drawing, &transformed_start, &transformed_end, &dimension.orientation)?;
+            // Note: Extension lines removed to match SVG rendering style
 
             // Add dimension text
             let text = dxf::entities::Text {
                 location: dxf::Point::new(transformed_text.x, transformed_text.y, 0.0),
                 value: dimension.label.clone(),
-                text_height: 50.0, // 50mm text height
+                text_height: 15.0, // 15mm text height to match SVG proportions
+                rotation: match dimension.orientation {
+                    DimensionOrientation::Vertical => 90.0, // Rotate vertical text to read horizontally
+                    _ => 0.0,
+                },
                 ..Default::default()
             };
             let text_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Text(text));
