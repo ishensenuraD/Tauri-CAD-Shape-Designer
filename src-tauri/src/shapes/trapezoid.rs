@@ -1,4 +1,4 @@
-use crate::shapes::{BoundingBox, Dimension, DimensionOrientation, Point, ShapeGeometry, Transform, ValidationError, ShapeParameters};
+use crate::shapes::{BoundingBox, Point, ShapeGeometry, ShapeParameters, ValidationError, Dimension, DimensionOrientation, Transform};
 
 pub struct TrapezoidGeometry;
 
@@ -149,8 +149,7 @@ impl ShapeGeometry for TrapezoidGeometry {
         let bottom_offset = (bottom_width - top_width) / 2.0;
         let offset = 20.0;
         
-        // Create base dimensions (before transformation)
-        let base_dimensions = vec![
+        vec![
             // Top width dimension (horizontal at top)
             Dimension {
                 start_point: Point { x: bottom_offset + render_offset.x, y: -offset + render_offset.y },
@@ -178,42 +177,9 @@ impl ShapeGeometry for TrapezoidGeometry {
                 label: format!("{:.0}mm", height),
                 orientation: DimensionOrientation::Vertical,
             },
-        ];
-        
-        // Apply rotation transformation if needed
-        if transform.rotation != 0.0 {
-            let center = self.get_center(params);
-            let adjusted_center = Point {
-                x: center.x + render_offset.x,
-                y: center.y + render_offset.y,
-            };
-            
-            base_dimensions.into_iter().map(|mut dim| {
-                dim.start_point = self.transform_point(&dim.start_point, &adjusted_center, transform);
-                dim.end_point = self.transform_point(&dim.end_point, &adjusted_center, transform);
-                dim.text_position = self.transform_point(&dim.text_position, &adjusted_center, transform);
-                
-                // Update dimension orientation based on rotation
-                let rotation_degrees = transform.rotation;
-                let normalized_rotation = rotation_degrees % 360.0;
-                
-                if (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
-                   (normalized_rotation >= 225.0 && normalized_rotation < 315.0) {
-                    // Swap orientations for 90° and 270° rotations
-                    match dim.orientation {
-                        DimensionOrientation::Horizontal => dim.orientation = DimensionOrientation::Vertical,
-                        DimensionOrientation::Vertical => dim.orientation = DimensionOrientation::Horizontal,
-                        _ => {}
-                    }
-                }
-                
-                dim
-            }).collect()
-        } else {
-            base_dimensions
-        }
+        ]
     }
-    
+
     fn transform_point(&self, point: &Point, center: &Point, transform: &Transform) -> Point {
         let mut x = point.x;
         let mut y = point.y;
@@ -231,11 +197,20 @@ impl ShapeGeometry for TrapezoidGeometry {
             y = rel_x * sin_a + rel_y * cos_a + center.y;
         }
 
+        // Apply flips
+        if transform.flip_x {
+            x = 2.0 * center.x - x;
+        }
+        if transform.flip_y {
+            y = 2.0 * center.y - y;
+        }
+
         Point { x, y }
     }
 
     fn get_rotation_center(&self, params: &ShapeParameters) -> Point {
-        // For trapezoid, use the same center as the shape
-        self.get_center(params)
+        let bottom_width = params.bottom_width.unwrap_or(120.0);
+        let height = params.height.unwrap_or(60.0);
+        Point { x: bottom_width / 2.0, y: height / 2.0 }
     }
 }
