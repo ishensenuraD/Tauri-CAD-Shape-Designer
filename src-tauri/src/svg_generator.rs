@@ -18,7 +18,7 @@ impl SvgGenerator {
         Self
     }
 
-    pub fn generate_shape_info(&self, shape_type: &str, params: &ShapeParameters) -> Result<ShapeInfo, String> {
+    pub fn generate_shape_info(&self, shape_type: &str, params: &ShapeParameters, transform: &Transform) -> Result<ShapeInfo, String> {
         let geometry = self.get_geometry(shape_type)?;
         
         // Validate parameters first
@@ -55,7 +55,7 @@ impl SvgGenerator {
             perimeter: geometry.get_perimeter(params),
             center,
             vertices: geometry.get_vertices(params),
-            dimensions: geometry.get_dimensions(params, &render_offset),
+            dimensions: geometry.get_dimensions(params, &render_offset, transform),
             render_offset,
             svg_to_image_scale_x,
             svg_to_image_scale_y,
@@ -63,11 +63,11 @@ impl SvgGenerator {
     }
 
     pub fn generate_svg(&self, shape_type: &str, params: &ShapeParameters, transform: &Transform, width: u32, height: u32) -> Result<String, String> {
-        let shape_info = self.generate_shape_info(shape_type, params)?;
+        let shape_info = self.generate_shape_info(shape_type, params, transform)?;
         
         // Calculate viewBox with padding
         let padding = 50;
-        let view_box = self.calculate_view_box(&shape_info.bounding_box, transform, padding);
+        let view_box = self.calculate_view_box(&shape_info.bounding_box, transform, padding, shape_type, params);
         
         // Create SVG document
         let mut document = Document::new()
@@ -104,14 +104,17 @@ impl SvgGenerator {
         }
     }
 
-    fn calculate_view_box(&self, bounding_box: &BoundingBox, transform: &Transform, padding: i32) -> (i32, i32, i32, i32) {
+    fn calculate_view_box(&self, bounding_box: &BoundingBox, transform: &Transform, padding: i32, shape_type: &str, params: &ShapeParameters) -> (i32, i32, i32, i32) {
         let mut min_x = bounding_box.min_x;
         let mut min_y = bounding_box.min_y;
         let mut max_x = bounding_box.max_x;
         let mut max_y = bounding_box.max_y;
 
-        // Apply rotation to bounding box corners
+        // Apply rotation to bounding box corners using shape's rotation center
         if transform.rotation != 0.0 || transform.flip_x || transform.flip_y {
+            let geometry = self.get_geometry(shape_type).unwrap();
+            let rotation_center = geometry.get_rotation_center(params);
+            
             let corners = vec![
                 Point { x: min_x, y: min_y },
                 Point { x: max_x, y: min_y },
@@ -120,7 +123,7 @@ impl SvgGenerator {
             ];
 
             let transformed_corners = corners.iter()
-                .map(|p| self.transform_point(p, &bounding_box, transform))
+                .map(|p| self.transform_point_with_center(p, &rotation_center, transform))
                 .collect::<Vec<_>>();
 
             min_x = transformed_corners.iter().map(|p| p.x).fold(f64::INFINITY, f64::min);
@@ -137,12 +140,7 @@ impl SvgGenerator {
         )
     }
 
-    fn transform_point(&self, point: &Point, bounding_box: &BoundingBox, transform: &Transform) -> Point {
-        let center = Point {
-            x: bounding_box.width / 2.0,
-            y: bounding_box.height / 2.0,
-        };
-
+    fn transform_point_with_center(&self, point: &Point, center: &Point, transform: &Transform) -> Point {
         let mut x = point.x;
         let mut y = point.y;
 
@@ -186,18 +184,27 @@ impl SvgGenerator {
             let center = &shape_info.center;
             let mut transform_str = String::new();
             
+            // Start with any rotation
             if transform.rotation != 0.0 {
                 transform_str.push_str(&format!("rotate({} {} {})", transform.rotation, center.x, center.y));
             }
             
-            if transform.flip_x {
+            // Apply flips using matrix transformations that match viewBox logic
+            if transform.flip_x || transform.flip_y {
                 if !transform_str.is_empty() { transform_str.push(' '); }
-                transform_str.push_str("scale(-1, 1)");
-            }
-            
-            if transform.flip_y {
-                if !transform_str.is_empty() { transform_str.push(' '); }
-                transform_str.push_str("scale(1, -1)");
+                
+                let (a, b, c, d, e, f) = if transform.flip_x && transform.flip_y {
+                    // Both flips: scale(-1, -1) around center
+                    (-1.0, 0.0, 0.0, -1.0, 2.0 * center.x, 2.0 * center.y)
+                } else if transform.flip_x {
+                    // Horizontal flip: scale(-1, 1) around center
+                    (-1.0, 0.0, 0.0, 1.0, 2.0 * center.x, 0.0)
+                } else {
+                    // Vertical flip: scale(1, -1) around center
+                    (1.0, 0.0, 0.0, -1.0, 0.0, 2.0 * center.y)
+                };
+                
+                transform_str.push_str(&format!("matrix({} {} {} {} {} {}", a, b, c, d, e, f));
             }
             
             element = element.set("transform", transform_str);
@@ -226,18 +233,27 @@ impl SvgGenerator {
             let center = &shape_info.center;
             let mut transform_str = String::new();
             
+            // Start with any rotation
             if transform.rotation != 0.0 {
                 transform_str.push_str(&format!("rotate({} {} {})", transform.rotation, center.x, center.y));
             }
             
-            if transform.flip_x {
+            // Apply flips using matrix transformations that match viewBox logic
+            if transform.flip_x || transform.flip_y {
                 if !transform_str.is_empty() { transform_str.push(' '); }
-                transform_str.push_str("scale(-1, 1)");
-            }
-            
-            if transform.flip_y {
-                if !transform_str.is_empty() { transform_str.push(' '); }
-                transform_str.push_str("scale(1, -1)");
+                
+                let (a, b, c, d, e, f) = if transform.flip_x && transform.flip_y {
+                    // Both flips: scale(-1, -1) around center
+                    (-1.0, 0.0, 0.0, -1.0, 2.0 * center.x, 2.0 * center.y)
+                } else if transform.flip_x {
+                    // Horizontal flip: scale(-1, 1) around center
+                    (-1.0, 0.0, 0.0, 1.0, 2.0 * center.x, 0.0)
+                } else {
+                    // Vertical flip: scale(1, -1) around center
+                    (1.0, 0.0, 0.0, -1.0, 0.0, 2.0 * center.y)
+                };
+                
+                transform_str.push_str(&format!("matrix({} {} {} {} {} {}", a, b, c, d, e, f));
             }
             
             element = element.set("transform", transform_str);

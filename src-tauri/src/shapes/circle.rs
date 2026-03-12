@@ -1,4 +1,4 @@
-use crate::shapes::{BoundingBox, Point, ShapeGeometry, ShapeParameters, ValidationError, Dimension, DimensionOrientation};
+use crate::shapes::{BoundingBox, Dimension, DimensionOrientation, Point, ShapeGeometry, Transform, ValidationError, ShapeParameters};
 
 pub struct CircleGeometry;
 
@@ -91,29 +91,83 @@ impl ShapeGeometry for CircleGeometry {
         }
     }
 
-    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension> {
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point, transform: &Transform) -> Vec<Dimension> {
         let radius = params.radius.unwrap_or(50.0);
-        let center = Point { x: radius + render_offset.x, y: radius + render_offset.y };
+        let diameter = radius * 2.0;
+        let _center = Point { x: radius + render_offset.x, y: radius + render_offset.y };
         
-        vec![
-            // Radius dimension (horizontal from center to edge)
-            Dimension {
-                start_point: center,
-                end_point: Point { x: radius * 2.0 + render_offset.x, y: radius + render_offset.y },
-                text_position: Point { x: radius * 1.5 + render_offset.x, y: radius - 15.0 + render_offset.y },
-                value: radius,
-                label: format!("R {:.0}mm", radius),
-                orientation: DimensionOrientation::Radial,
-            },
+        // Dynamic offset calculation - 8% of dimension with bounds
+        let diameter_offset = (diameter * 0.08).max(5.0).min(30.0);
+        
+        // Create base dimensions (before transformation)
+        let base_dimensions = vec![
             // Diameter dimension (vertical through center)
             Dimension {
-                start_point: Point { x: radius + render_offset.x, y: 10.0 + render_offset.y },
-                end_point: Point { x: radius + render_offset.x, y: radius * 2.0 - 10.0 + render_offset.y },
-                text_position: Point { x: radius + 15.0 + render_offset.x, y: radius + render_offset.y },
-                value: radius * 2.0,
-                label: format!("Ø {:.0}mm", radius * 2.0),
+                start_point: Point { x: radius + render_offset.x, y: diameter_offset + render_offset.y },
+                end_point: Point { x: radius + render_offset.x, y: diameter - diameter_offset + render_offset.y },
+                text_position: Point { x: radius + diameter_offset + (diameter_offset * 0.75) + render_offset.x, y: radius + render_offset.y },
+                value: diameter,
+                label: format!("Ø {:.0}mm", diameter),
                 orientation: DimensionOrientation::Vertical,
             },
-        ]
+        ];
+        
+        // Apply rotation transformation if needed
+        if transform.rotation != 0.0 {
+            let center = self.get_center(params);
+            let adjusted_center = Point {
+                x: center.x + render_offset.x,
+                y: center.y + render_offset.y,
+            };
+            
+            base_dimensions.into_iter().map(|mut dim| {
+                dim.start_point = self.transform_point(&dim.start_point, &adjusted_center, transform);
+                dim.end_point = self.transform_point(&dim.end_point, &adjusted_center, transform);
+                dim.text_position = self.transform_point(&dim.text_position, &adjusted_center, transform);
+                
+                // Update dimension orientation based on rotation
+                let rotation_degrees = transform.rotation;
+                let normalized_rotation = rotation_degrees % 360.0;
+                
+                if (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
+                   (normalized_rotation >= 225.0 && normalized_rotation < 315.0) {
+                    // Swap orientations for 90° and 270° rotations
+                    match dim.orientation {
+                        DimensionOrientation::Horizontal => dim.orientation = DimensionOrientation::Vertical,
+                        DimensionOrientation::Vertical => dim.orientation = DimensionOrientation::Horizontal,
+                        _ => {}
+                    }
+                }
+                
+                dim
+            }).collect()
+        } else {
+            base_dimensions
+        }
+    }
+    
+    fn transform_point(&self, point: &Point, center: &Point, transform: &Transform) -> Point {
+        let mut x = point.x;
+        let mut y = point.y;
+
+        // Apply rotation
+        if transform.rotation != 0.0 {
+            let angle_rad = (transform.rotation * std::f64::consts::PI) / 180.0;
+            let cos_a = angle_rad.cos();
+            let sin_a = angle_rad.sin();
+            
+            let rel_x = x - center.x;
+            let rel_y = y - center.y;
+            
+            x = rel_x * cos_a - rel_y * sin_a + center.x;
+            y = rel_x * sin_a + rel_y * cos_a + center.y;
+        }
+
+        Point { x, y }
+    }
+
+    fn get_rotation_center(&self, params: &ShapeParameters) -> Point {
+        // For circle, use the same center as the shape
+        self.get_center(params)
     }
 }

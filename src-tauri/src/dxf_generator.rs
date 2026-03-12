@@ -21,7 +21,7 @@ impl DxfGenerator {
         
         // Get shape geometry
         let geometry = self.get_geometry(shape_type)?;
-        let mut shape_info = self.create_shape_info(&geometry, params)?;
+        let mut shape_info = self.create_shape_info(&geometry, params, transform)?;
         shape_info.shape_type = shape_type.to_string();
         
         // Add shape outline
@@ -40,7 +40,7 @@ impl DxfGenerator {
         
         // Get shape geometry
         let geometry = self.get_geometry(shape_type)?;
-        let mut shape_info = self.create_shape_info(&geometry, params)?;
+        let mut shape_info = self.create_shape_info(&geometry, params, transform)?;
         shape_info.shape_type = shape_type.to_string();
         
         // Add shape outline
@@ -69,7 +69,7 @@ impl DxfGenerator {
         }
     }
 
-    fn create_shape_info(&self, geometry: &Box<dyn ShapeGeometry>, params: &ShapeParameters) -> Result<ShapeInfo, String> {
+    fn create_shape_info(&self, geometry: &Box<dyn ShapeGeometry>, params: &ShapeParameters, transform: &Transform) -> Result<ShapeInfo, String> {
         // Validate parameters first
         let validation = geometry.validate_parameters(params);
         if !validation.is_valid {
@@ -95,7 +95,7 @@ impl DxfGenerator {
             perimeter: geometry.get_perimeter(params),
             center,
             vertices: geometry.get_vertices(params),
-            dimensions: geometry.get_dimensions(params, &render_offset),
+            dimensions: geometry.get_dimensions(params, &render_offset, transform),
             render_offset,
             svg_to_image_scale_x: 1.0, // DXF doesn't have scaling issues
             svg_to_image_scale_y: 1.0,
