@@ -92,5 +92,7 @@ pub trait ShapeGeometry {
     fn get_center(&self, params: &ShapeParameters) -> Point;
     fn get_vertices(&self, params: &ShapeParameters) -> Vec<Point>;
     fn validate_parameters(&self, params: &ShapeParameters) -> ValidationError;
-    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point) -> Vec<Dimension>;
+    fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point, transform: &Transform) -> Vec<Dimension>;
+    fn transform_point(&self, point: &Point, center: &Point, transform: &Transform) -> Point;
+    fn get_rotation_center(&self, params: &ShapeParameters) -> Point;
 }
