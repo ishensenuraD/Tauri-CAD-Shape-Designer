@@ -187,16 +187,16 @@ impl ShapeGeometry for RectangleGeometry {
             // Width dimension (horizontal, above the shape)
             Dimension {
                 start_point: Point {
-                    x: 0.0 + render_offset.x,
+                    x: width*0.05 + render_offset.x,
                     y: -width_offset + render_offset.y,
                 },
                 end_point: Point {
-                    x: width + render_offset.x,
+                    x: width *0.95 + render_offset.x,
                     y: -width_offset + render_offset.y,
                 },
                 text_position: Point {
                     x: width / 2.0 + render_offset.x,
-                    y: -width_offset - (width_offset * 0.5) + render_offset.y,
+                    y: -width_offset +19.0 + render_offset.y,
                 },
                 value: width,
                 label: format!("{:.0}mm", width),
@@ -213,7 +213,7 @@ impl ShapeGeometry for RectangleGeometry {
                     y: height + render_offset.y,
                 },
                 text_position: Point {
-                    x: -height_offset - (height_offset * 0.75) + render_offset.x,
+                    x: -height_offset +40.0 + render_offset.x,
                     y: height / 2.0 + render_offset.y,
                 },
                 value: height,

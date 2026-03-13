@@ -167,49 +167,7 @@ impl DxfGenerator {
         Ok(())
     }
 
-    fn add_extension_lines(&self, drawing: &mut dxf::Drawing, start: &Point, end: &Point, orientation: &DimensionOrientation) -> Result<(), String> {
-        let extension_length = 20.0; // 20mm extension lines
 
-        match orientation {
-            DimensionOrientation::Horizontal => {
-                // Vertical extension lines
-                let start_ext = dxf::entities::Line {
-                    p1: dxf::Point::new(start.x, start.y, 0.0),
-                    p2: dxf::Point::new(start.x, start.y - extension_length, 0.0),
-                    ..Default::default()
-                };
-                let end_ext = dxf::entities::Line {
-                    p1: dxf::Point::new(end.x, end.y, 0.0),
-                    p2: dxf::Point::new(end.x, end.y - extension_length, 0.0),
-                    ..Default::default()
-                };
-                let start_ext_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Line(start_ext));
-                drawing.add_entity(start_ext_entity);
-                let end_ext_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Line(end_ext));
-                drawing.add_entity(end_ext_entity);
-            },
-            DimensionOrientation::Vertical => {
-                // Horizontal extension lines
-                let start_ext = dxf::entities::Line {
-                    p1: dxf::Point::new(start.x, start.y, 0.0),
-                    p2: dxf::Point::new(start.x - extension_length, start.y, 0.0),
-                    ..Default::default()
-                };
-                let end_ext = dxf::entities::Line {
-                    p1: dxf::Point::new(end.x, end.y, 0.0),
-                    p2: dxf::Point::new(end.x - extension_length, end.y, 0.0),
-                    ..Default::default()
-                };
-                let start_ext_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Line(start_ext));
-                drawing.add_entity(start_ext_entity);
-                let end_ext_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Line(end_ext));
-                drawing.add_entity(end_ext_entity);
-            },
-            _ => {} // No extension lines for radial/angular dimensions
-        }
-
-        Ok(())
-    }
 
     fn add_centerlines(&self, drawing: &mut dxf::Drawing, shape_info: &ShapeInfo, transform: &Transform) -> Result<(), String> {
         // Add centerlines for circles
