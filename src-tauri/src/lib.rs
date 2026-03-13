@@ -49,9 +49,9 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn get_shape_info(shape_type: String, parameters: ShapeParameters) -> Result<ShapeInfo, String> {
+fn get_shape_info(shape_type: String, parameters: ShapeParameters, transform: Transform) -> Result<ShapeInfo, String> {
     let generator = SvgGenerator::new();
-    generator.generate_shape_info(&shape_type, &parameters)
+    generator.generate_shape_info(&shape_type, &parameters, &transform)
 }
 
 #[tauri::command]
@@ -66,7 +66,7 @@ fn render_shape_to_png(request: RenderRequest) -> Result<RenderResponse, String>
     
     // First get shape info
     let generator = SvgGenerator::new();
-    let shape_info = match generator.generate_shape_info(&request.shape_type, &request.parameters) {
+    let shape_info = match generator.generate_shape_info(&request.shape_type, &request.parameters, &request.transform) {
         Ok(info) => info,
         Err(e) => {
             return Ok(RenderResponse {

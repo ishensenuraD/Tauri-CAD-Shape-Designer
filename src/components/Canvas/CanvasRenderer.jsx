@@ -148,8 +148,8 @@ const CanvasRenderer = () => {
     if (!showDimensions || !shapeInfo || !shapeInfo.dimensions) return;
 
     const canvas = canvasRef.current;
-    const centerX = (canvas.width - renderedImage?.width || 0) / 2;
-    const centerY = (canvas.height - renderedImage?.height || 0) / 2;
+    const canvasCenterX = (canvas.width - renderedImage?.width || 0) / 2;
+    const canvasCenterY = (canvas.height - renderedImage?.height || 0)  / 2;
 
     shapeInfo.dimensions.forEach(dimension => {
       // Apply scale factors to transform from SVG coordinates to image coordinates
@@ -166,18 +166,20 @@ const CanvasRenderer = () => {
         y: dimension.text_position.y * (shapeInfo.svg_to_image_scale_y || 1)
       };
 
-      // Transform dimension coordinates based on zoom and pan
+      // Transform dimension coordinates based on zoom and pan only (no rotation - handled in backend)
       const transformedStart = {
-        x: centerX + scaledStart.x * zoom + pan.x,
-        y: centerY + scaledStart.y * zoom + pan.y
+        x: canvasCenterX + scaledStart.x * zoom + pan.x,
+        y: canvasCenterY + scaledStart.y * zoom + pan.y
       };
+      
       const transformedEnd = {
-        x: centerX + scaledEnd.x * zoom + pan.x,
-        y: centerY + scaledEnd.y * zoom + pan.y
+        x: canvasCenterX + scaledEnd.x * zoom + pan.x,
+        y: canvasCenterY + scaledEnd.y * zoom + pan.y
       };
+      
       const transformedText = {
-        x: centerX + scaledText.x * zoom + pan.x,
-        y: centerY + scaledText.y * zoom + pan.y
+        x: canvasCenterX + scaledText.x * zoom + pan.x,
+        y: canvasCenterY + scaledText.y * zoom + pan.y
       };
 
       // Draw dimension line
@@ -231,7 +233,10 @@ const CanvasRenderer = () => {
     ctx.restore();
 
     // Draw dimensions (after restoring context to avoid transformations)
-    drawDimensions(ctx);
+    // SVG text elements don't render properly when converted to PNG, so draw them manually
+    if (showDimensions) {
+      drawDimensions(ctx);
+    }
   }, [zoom, pan, showGrid, renderedImage, shapeInfo, showDimensions]);
 
   // Redraw when dependencies change

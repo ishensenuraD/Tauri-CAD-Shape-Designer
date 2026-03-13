@@ -20,6 +20,10 @@ use svg::node::element::Circle as SvgCircle;
 
 use svg::node::element::Group;
 
+use svg::node::element::Line;
+
+use svg::node::element::Polygon;
+
 use svg::Document;
 
 
@@ -38,7 +42,7 @@ impl SvgGenerator {
 
 
 
-    pub fn generate_shape_info(&self, shape_type: &str, params: &ShapeParameters) -> Result<ShapeInfo, String> {
+    pub fn generate_shape_info(&self, shape_type: &str, params: &ShapeParameters, transform: &Transform) -> Result<ShapeInfo, String> {
 
         let geometry = self.get_geometry(shape_type)?;
 
@@ -128,7 +132,7 @@ impl SvgGenerator {
 
     pub fn generate_svg(&self, shape_type: &str, params: &ShapeParameters, transform: &Transform, width: u32, height: u32) -> Result<String, String> {
 
-        let shape_info = self.generate_shape_info(shape_type, params)?;
+        let shape_info = self.generate_shape_info(shape_type, params, transform)?;
 
         
 
@@ -136,7 +140,7 @@ impl SvgGenerator {
 
         let padding = 50;
 
-        let view_box = self.calculate_view_box(&shape_info.bounding_box, transform, padding);
+        let view_box = self.calculate_view_box(&shape_info.bounding_box, &shape_info.center, transform, padding);
 
         
 
@@ -176,8 +180,6 @@ impl SvgGenerator {
 
         document = document.add(shape_element);
 
-
-
         // Return SVG as string
 
         let svg_string = document.to_string();
@@ -210,7 +212,7 @@ impl SvgGenerator {
 
 
 
-    fn calculate_view_box(&self, bounding_box: &BoundingBox, transform: &Transform, padding: i32) -> (i32, i32, i32, i32) {
+    fn calculate_view_box(&self, bounding_box: &BoundingBox, shape_center: &Point, transform: &Transform, padding: i32) -> (i32, i32, i32, i32) {
 
         let mut min_x = bounding_box.min_x;
 
@@ -242,7 +244,7 @@ impl SvgGenerator {
 
             let transformed_corners = corners.iter()
 
-                .map(|p| self.transform_point(p, &bounding_box, transform))
+                .map(|p| self.transform_point(p, shape_center, transform))
 
                 .collect::<Vec<_>>();
 
@@ -276,15 +278,7 @@ impl SvgGenerator {
 
 
 
-    fn transform_point(&self, point: &Point, bounding_box: &BoundingBox, transform: &Transform) -> Point {
-
-        let center = Point {
-
-            x: bounding_box.width / 2.0,
-
-            y: bounding_box.height / 2.0,
-
-        };
+    fn transform_point(&self, point: &Point, center: &Point, transform: &Transform) -> Point {
 
 
 
