@@ -115,27 +115,44 @@ const CanvasRenderer = () => {
     ctx.stroke();
   };
 
-  // Draw arrow head
-  const drawArrow = (ctx, from, to, color = '#2563eb', size = 8) => {
+  // Draw arrow head with dynamic sizing
+  const drawArrow = (ctx, from, to, dimensionValue, color = '#2563eb') => {
+    // Calculate arrow size based on dimension length (2-3% of dimension in pixels)
+    const dimensionLength = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2));
+    let arrowSize = Math.max(dimensionLength * 0.025, 4); // 2.5% minimum 4px
+    arrowSize = Math.min(arrowSize, 12); // Maximum 12px
+    
     const angle = Math.atan2(to.y - from.y, to.x - from.x);
     
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(to.x, to.y);
     ctx.lineTo(
-      to.x - size * Math.cos(angle - Math.PI / 6),
-      to.y - size * Math.sin(angle - Math.PI / 6)
+      to.x - arrowSize * Math.cos(angle - Math.PI / 6),
+      to.y - arrowSize * Math.sin(angle - Math.PI / 6)
     );
     ctx.lineTo(
-      to.x - size * Math.cos(angle + Math.PI / 6),
-      to.y - size * Math.sin(angle + Math.PI / 6)
+      to.x - arrowSize * Math.cos(angle + Math.PI / 6),
+      to.y - arrowSize * Math.sin(angle + Math.PI / 6)
     );
     ctx.closePath();
     ctx.fill();
   };
 
-  // Draw dimension text
-  const drawDimensionText = (ctx, text, position, color = '#2563eb', fontSize = 12) => {
+  // Draw dimension text with dynamic sizing
+  const drawDimensionText = (ctx, text, position, dimensionValue, color = '#2563eb') => {
+    // Calculate font size based on dimension length
+    const baseFontSize = 12;
+    let fontSize = Math.max(baseFontSize * 0.8, 8); // Minimum 8px
+    fontSize = Math.min(fontSize, 16); // Maximum 16px
+    
+    // Adjust font size based on dimension value (smaller dimensions get slightly smaller text)
+    if (dimensionValue < 200) {
+      fontSize = Math.max(fontSize * 0.85, 8);
+    } else if (dimensionValue > 1000) {
+      fontSize = Math.min(fontSize * 1.1, 16);
+    }
+    
     ctx.fillStyle = color;
     ctx.font = `${fontSize}px Arial`;
     ctx.textAlign = 'center';
@@ -183,12 +200,12 @@ const CanvasRenderer = () => {
       // Draw dimension line
       drawDimensionLine(ctx, transformedStart, transformedEnd);
       
-      // Draw arrows at both ends
-      drawArrow(ctx, transformedStart, transformedEnd);
-      drawArrow(ctx, transformedEnd, transformedStart);
+      // Draw arrows at both ends with dynamic sizing
+      drawArrow(ctx, transformedStart, transformedEnd, dimension.value);
+      drawArrow(ctx, transformedEnd, transformedStart, dimension.value);
       
-      // Draw dimension text
-      drawDimensionText(ctx, dimension.label, transformedText);
+      // Draw dimension text with dynamic sizing
+      drawDimensionText(ctx, dimension.label, transformedText, dimension.value);
     });
   };
 
