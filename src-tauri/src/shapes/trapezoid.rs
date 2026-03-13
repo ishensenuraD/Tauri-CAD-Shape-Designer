@@ -152,27 +152,27 @@ impl ShapeGeometry for TrapezoidGeometry {
         vec![
             // Top width dimension (horizontal at top)
             Dimension {
-                start_point: Point { x: bottom_offset + render_offset.x, y: -offset + render_offset.y },
-                end_point: Point { x: bottom_offset + top_width + render_offset.x, y: -offset + render_offset.y },
-                text_position: Point { x: bottom_offset + top_width / 2.0 + render_offset.x, y: -offset - 10.0 + render_offset.y },
+                start_point: Point { x: bottom_offset + render_offset.x, y: -height*0.05 + render_offset.y },
+                end_point: Point { x: bottom_offset + top_width + render_offset.x, y: -height*0.05 + render_offset.y },
+                text_position: Point { x: bottom_offset + top_width / 2.0 + render_offset.x, y: -offset +30.0 + render_offset.y },
                 value: top_width,
                 label: format!("{:.0}mm", top_width),
                 orientation: DimensionOrientation::Horizontal,
             },
             // Bottom width dimension (horizontal at bottom)
             Dimension {
-                start_point: Point { x: 0.0 + render_offset.x, y: height + offset + render_offset.y },
-                end_point: Point { x: bottom_width + render_offset.x, y: height + offset + render_offset.y },
-                text_position: Point { x: bottom_width / 2.0 + render_offset.x, y: height + offset + 15.0 + render_offset.y },
+                start_point: Point { x: 0.0 + render_offset.x, y: height+ height*0.05 + render_offset.y },
+                end_point: Point { x: bottom_width + render_offset.x, y: height+height*0.05 + render_offset.y },
+                text_position: Point { x: bottom_width / 2.0 + render_offset.x, y: height + offset -15.0  + render_offset.y },
                 value: bottom_width,
                 label: format!("{:.0}mm", bottom_width),
                 orientation: DimensionOrientation::Horizontal,
             },
             // Height dimension (vertical at center)
             Dimension {
-                start_point: Point { x: bottom_width / 2.0 + offset + render_offset.x, y: 0.0 + render_offset.y },
-                end_point: Point { x: bottom_width / 2.0 + offset + render_offset.x, y: height + render_offset.y },
-                text_position: Point { x: bottom_width / 2.0 + offset + 15.0 + render_offset.x, y: height / 2.0 + render_offset.y },
+                start_point: Point { x: bottom_width / 2.0 + offset + render_offset.x, y: height*0.10 + render_offset.y },
+                end_point: Point { x: bottom_width / 2.0 + offset + render_offset.x, y: height -height*0.10 + render_offset.y },
+                text_position: Point { x: bottom_width / 2.0 + offset + 15.0 + render_offset.x, y: height / 2.0  + render_offset.y },
                 value: height,
                 label: format!("{:.0}mm", height),
                 orientation: DimensionOrientation::Vertical,

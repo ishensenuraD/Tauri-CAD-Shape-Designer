@@ -167,43 +167,43 @@ impl ShapeGeometry for LShapeGeometry {
         let outer_height = params.outer_height.unwrap_or(80.0);
         let inner_width = params.inner_width.unwrap_or(40.0);
         let inner_height = params.inner_height.unwrap_or(40.0);
-        let offset = 15.0;
+        let offset = 20.0;
         
         vec![
-            // Outer width dimension (horizontal at top)
+            // Overall outer width dimension (horizontal at top)
             Dimension {
-                start_point: Point { x: 0.0 + render_offset.x, y: -offset + render_offset.y },
+                start_point: Point { x:50.0 + render_offset.x, y: -offset + render_offset.y },
                 end_point: Point { x: outer_width + render_offset.x, y: -offset + render_offset.y },
                 text_position: Point { x: outer_width / 2.0 + render_offset.x, y: -offset - 10.0 + render_offset.y },
                 value: outer_width,
                 label: format!("{:.0}mm", outer_width),
                 orientation: DimensionOrientation::Horizontal,
             },
-            // Outer height dimension (vertical at left)
+            // Overall outer height dimension (vertical at left)
             Dimension {
                 start_point: Point { x: -offset + render_offset.x, y: 0.0 + render_offset.y },
                 end_point: Point { x: -offset + render_offset.x, y: outer_height + render_offset.y },
-                text_position: Point { x: -offset - 15.0 + render_offset.x, y: outer_height / 2.0 + render_offset.y },
+                text_position: Point { x: -offset - 10.0 + render_offset.x, y: outer_height / 2.0 + render_offset.y },
                 value: outer_height,
                 label: format!("{:.0}mm", outer_height),
                 orientation: DimensionOrientation::Vertical,
             },
-            // Bottom leg width dimension (horizontal at inner height)
+            // Bottom horizontal leg width (from 0 to inner_width)
             Dimension {
-                start_point: Point { x: 0.0 + render_offset.x, y: inner_height + offset + render_offset.y },
-                end_point: Point { x: outer_width + render_offset.x, y: inner_height + offset + render_offset.y },
-                text_position: Point { x: outer_width / 2.0 + render_offset.x, y: inner_height + offset + 15.0 + render_offset.y },
-                value: outer_width,
-                label: format!("{:.0}mm", outer_width),
+                start_point: Point { x: 50.0 + render_offset.x, y: outer_height + offset + render_offset.y },
+                end_point: Point { x: inner_width + render_offset.x, y: outer_height + offset + render_offset.y },
+                text_position: Point { x: inner_width / 2.0 + render_offset.x, y: outer_height + offset + 10.0 + render_offset.y },
+                value: inner_width,
+                label: format!("{:.0}mm", inner_width),
                 orientation: DimensionOrientation::Horizontal,
             },
-            // Left leg height dimension (vertical at inner width)
+            // Right vertical leg height (from inner_height to outer_height)
             Dimension {
-                start_point: Point { x: inner_width + offset + render_offset.x, y: 0.0 + render_offset.y },
-                end_point: Point { x: inner_width + offset + render_offset.x, y: outer_height + render_offset.y },
-                text_position: Point { x: inner_width + offset + 15.0 + render_offset.x, y: outer_height / 2.0 + render_offset.y },
-                value: outer_height,
-                label: format!("{:.0}mm", outer_height),
+                start_point: Point { x: outer_width + offset + render_offset.x, y: 0.0 + render_offset.y },
+                end_point: Point { x: outer_width + offset + render_offset.x, y: inner_height + render_offset.y },
+                text_position: Point { x: outer_width + offset + 10.0 + render_offset.x, y: inner_height / 2.0 + render_offset.y },
+                value: inner_height,
+                label: format!("{:.0}mm", inner_height),
                 orientation: DimensionOrientation::Vertical,
             },
         ]
