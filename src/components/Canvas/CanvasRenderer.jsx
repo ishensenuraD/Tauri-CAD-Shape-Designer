@@ -258,7 +258,7 @@ const CanvasRenderer = () => {
 
   // Draw grid
   const drawGrid = (ctx, width, height) => {
-    const gridSize = 100; // 100mm grid
+    const gridSize = 80; // 100mm grid
     ctx.strokeStyle = '#9ca3af';
     ctx.lineWidth = 1;
 
