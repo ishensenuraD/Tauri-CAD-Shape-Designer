@@ -182,7 +182,7 @@ const CanvasRenderer = () => {
         y: canvasCenterY + scaledText.y * zoom + pan.y
       };
 
-      // Draw dimension line
+      // Draw dimension line (Canvas now handles lines too)
       drawDimensionLine(ctx, transformedStart, transformedEnd);
       
       // Draw arrows at both ends
@@ -358,7 +358,7 @@ const CanvasRenderer = () => {
         <canvas
           ref={canvasRef}
           width={800}
-          height={500}
+          height={710}
           className="cursor-move"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}

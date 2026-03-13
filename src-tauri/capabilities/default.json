@@ -9,6 +9,7 @@
     "dialog:allow-save",
     "dialog:default",
     "fs:allow-write-text-file",
+    "fs:allow-write-file",
     "fs:default"
   ]
 }

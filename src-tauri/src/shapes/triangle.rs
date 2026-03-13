@@ -249,14 +249,14 @@ impl ShapeGeometry for TriangleGeometry {
                 start_point: Point { x: base * 0.5 + render_offset.x, y: height -offset * 0.5 + render_offset.y },
                 end_point: Point { x: base * 0.5 + render_offset.x, y: 10.0 + render_offset.y },
                 text_position: Point { x: base * 0.5 + 15.0 + render_offset.x, y: height / 2.0 + render_offset.y },
-                value: height ,
-                label: format!("{:.0}mm", height ),
+                value: height,
+                label: format!("{:.0}mm", height),
                 orientation: DimensionOrientation::Vertical,
             },
         ];
         
-        // Apply rotation transformation if needed
-        if transform.rotation != 0.0 {
+        // Apply transformation if needed (rotation or flips)
+        if transform.rotation != 0.0 || transform.flip_x || transform.flip_y {
             let center = self.get_rotation_center(params);
             let adjusted_center = Point {
                 x: center.x + render_offset.x,
@@ -268,13 +268,19 @@ impl ShapeGeometry for TriangleGeometry {
                 dim.end_point = self.transform_point(&dim.end_point, &adjusted_center, transform);
                 dim.text_position = self.transform_point(&dim.text_position, &adjusted_center, transform);
                 
-                // Update dimension orientation based on rotation
+                // Update dimension orientation based on rotation and flips
                 let rotation_degrees = transform.rotation;
                 let normalized_rotation = rotation_degrees % 360.0;
                 
-                if (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
-                   (normalized_rotation >= 225.0 && normalized_rotation < 315.0) {
-                    // Swap orientations for 90° and 270° rotations
+                // Check if orientation should change (90°/270° rotation or X/Y flip)
+                let should_swap_orientation = 
+                    (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
+                    (normalized_rotation >= 225.0 && normalized_rotation < 315.0) ||
+                    transform.flip_x ||
+                    transform.flip_y;
+                
+                if should_swap_orientation {
+                    // Swap orientations for 90° and 270° rotations, or when flipped
                     match dim.orientation {
                         DimensionOrientation::Horizontal => dim.orientation = DimensionOrientation::Vertical,
                         DimensionOrientation::Vertical => dim.orientation = DimensionOrientation::Horizontal,
@@ -321,6 +327,7 @@ impl ShapeGeometry for TriangleGeometry {
         let base = params.base.unwrap_or(100.0);
         let height = params.height.unwrap_or(100.0);
         Point { x: base / 2.0, y: height / 2.0 }
+
     }
 
 }

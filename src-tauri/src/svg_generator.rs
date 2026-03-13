@@ -20,10 +20,6 @@ use svg::node::element::Circle as SvgCircle;
 
 use svg::node::element::Group;
 
-use svg::node::element::Line;
-
-use svg::node::element::Polygon;
-
 use svg::Document;
 
 
@@ -68,7 +64,7 @@ impl SvgGenerator {
 
         // Calculate viewBox with padding
 
-        let padding = 50.0;
+        let padding = 70.0;
 
         let view_box_width = bounding_box.width + 2.0 * padding;
 
@@ -116,7 +112,7 @@ impl SvgGenerator {
 
             vertices: geometry.get_vertices(params),
 
-            dimensions: geometry.get_dimensions(params, &render_offset, &Transform { rotation: 0.0, flip_x: false, flip_y: false }),
+            dimensions: geometry.get_dimensions(params, &render_offset, transform),
 
             render_offset,
 
@@ -138,7 +134,7 @@ impl SvgGenerator {
 
         // Calculate viewBox with padding
 
-        let padding = 50;
+        let padding = 70;
 
         let view_box = self.calculate_view_box(&shape_info.bounding_box, &shape_info.center, transform, padding);
 
@@ -181,9 +177,7 @@ impl SvgGenerator {
         document = document.add(shape_element);
 
         // Return SVG as string
-
         let svg_string = document.to_string();
-
         Ok(svg_string)
 
     }
@@ -212,7 +206,7 @@ impl SvgGenerator {
 
 
 
-    fn calculate_view_box(&self, bounding_box: &BoundingBox, shape_center: &Point, transform: &Transform, padding: i32) -> (i32, i32, i32, i32) {
+    fn calculate_view_box(&self, bounding_box: &BoundingBox, shape_center: &Point, transform: &Transform, _padding: i32) -> (i32, i32, i32, i32) {
 
         let mut min_x = bounding_box.min_x;
 
@@ -222,7 +216,7 @@ impl SvgGenerator {
 
         let mut max_y = bounding_box.max_y;
 
-
+        
 
         // Apply rotation to bounding box corners
 
@@ -260,17 +254,23 @@ impl SvgGenerator {
 
         }
 
+        
 
+        // Add extra padding for dimensions (increase from 50 to 70 to accommodate dimension text and arrows)
+
+        let dimension_padding = 70;
+
+        
 
         (
 
-            (min_x - padding as f64) as i32,
+            (min_x - dimension_padding as f64) as i32,
 
-            (min_y - padding as f64) as i32,
+            (min_y - dimension_padding as f64) as i32,
 
-            (max_x - min_x + 2.0 * padding as f64) as i32,
+            (max_x - min_x + 2.0 * dimension_padding as f64) as i32,
 
-            (max_y - min_y + 2.0 * padding as f64) as i32,
+            (max_y - min_y + 2.0 * dimension_padding as f64) as i32,
 
         )
 
@@ -380,7 +380,9 @@ impl SvgGenerator {
 
                 if !transform_str.is_empty() { transform_str.push(' '); }
 
-                transform_str.push_str("scale(-1, 1)");
+                transform_str.push_str(&format!("translate({} {}) scale(-1, 1) translate({} {})", 
+
+                    center.x, center.y, -center.x, -center.y));
 
             }
 
@@ -390,7 +392,9 @@ impl SvgGenerator {
 
                 if !transform_str.is_empty() { transform_str.push(' '); }
 
-                transform_str.push_str("scale(1, -1)");
+                transform_str.push_str(&format!("translate({} {}) scale(1, -1) translate({} {})", 
+
+                    center.x, center.y, -center.x, -center.y));
 
             }
 
@@ -460,7 +464,9 @@ impl SvgGenerator {
 
                 if !transform_str.is_empty() { transform_str.push(' '); }
 
-                transform_str.push_str("scale(-1, 1)");
+                transform_str.push_str(&format!("translate({} {}) scale(-1, 1) translate({} {})", 
+
+                    center.x, center.y, -center.x, -center.y));
 
             }
 
@@ -470,7 +476,9 @@ impl SvgGenerator {
 
                 if !transform_str.is_empty() { transform_str.push(' '); }
 
-                transform_str.push_str("scale(1, -1)");
+                transform_str.push_str(&format!("translate({} {}) scale(1, -1) translate({} {})", 
+
+                    center.x, center.y, -center.x, -center.y));
 
             }
 

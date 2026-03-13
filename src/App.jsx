@@ -4,10 +4,18 @@ import ShapeLibrary from './components/ShapeLibrary/ShapeLibrary';
 import ShapeEditor from './components/ShapeEditor/ShapeEditor';
 import Canvas from './components/Canvas/Canvas';
 import ExportPanel from './components/Export/ExportPanel';
+import { testPngExport } from './export/png';
 import './App.css';
 
 function App() {
   const { currentShape, selectedShapeType } = useSelector((state) => state.shape);
+
+  // Make test function available globally for debugging
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.testPngExport = testPngExport;
+    }
+  }, []);
 
   return (
     <div className="app-container">

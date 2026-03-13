@@ -6,7 +6,23 @@ use crate::shapes::{BoundingBox, Point, ShapeGeometry, ShapeParameters, Validati
 
 
 
+
+
+
+
+
+
+
+
 pub struct CircleGeometry;
+
+
+
+
+
+
+
+
 
 
 
@@ -18,7 +34,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
     fn generate_path(&self, params: &ShapeParameters) -> String {
+
+
+
+
 
 
 
@@ -26,7 +50,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let segments = 32;
+
+
+
+
 
 
 
@@ -34,7 +66,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         
+
+
+
+
 
 
 
@@ -42,7 +82,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             let angle = (i as f64 / segments as f64) * 2.0 * std::f64::consts::PI;
+
+
+
+
 
 
 
@@ -50,7 +98,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             let y = radius + radius * angle.sin();
+
+
+
+
 
 
 
@@ -58,7 +114,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             if i == 0 {
+
+
+
+
 
 
 
@@ -66,7 +130,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             } else {
+
+
+
+
 
 
 
@@ -74,7 +146,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             }
+
+
+
+
 
 
 
@@ -82,7 +162,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         
+
+
+
+
 
 
 
@@ -90,7 +178,19 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -102,7 +202,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let radius = params.radius.unwrap_or(50.0);
+
+
+
+
 
 
 
@@ -110,7 +218,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         
+
+
+
+
 
 
 
@@ -118,7 +234,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             min_x: 0.0,
+
+
+
+
 
 
 
@@ -126,7 +250,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             max_x: diameter,
+
+
+
+
 
 
 
@@ -134,7 +266,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             width: diameter,
+
+
+
+
 
 
 
@@ -142,11 +282,27 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         }
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -158,7 +314,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let radius = params.radius.unwrap_or(50.0);
+
+
+
+
 
 
 
@@ -166,7 +330,19 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -178,7 +354,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let radius = params.radius.unwrap_or(50.0);
+
+
+
+
 
 
 
@@ -186,7 +370,19 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -198,7 +394,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let radius = params.radius.unwrap_or(50.0);
+
+
+
+
 
 
 
@@ -206,7 +410,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             x: radius,
+
+
+
+
 
 
 
@@ -214,11 +426,27 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         }
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -230,7 +458,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let radius = params.radius.unwrap_or(50.0);
+
+
+
+
 
 
 
@@ -238,11 +474,23 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let mut points = Vec::new();
 
 
 
+
+
+
+
         
+
+
+
+
 
 
 
@@ -250,7 +498,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             let angle = (i as f64 / num_points as f64) * 2.0 * std::f64::consts::PI;
+
+
+
+
 
 
 
@@ -258,7 +514,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
                 x: radius + radius * angle.cos(),
+
+
+
+
 
 
 
@@ -266,7 +530,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             });
+
+
+
+
 
 
 
@@ -274,7 +546,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         
+
+
+
+
 
 
 
@@ -282,7 +562,19 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -294,11 +586,23 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let mut errors = Vec::new();
 
 
 
+
+
+
+
         
+
+
+
+
 
 
 
@@ -306,7 +610,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             if radius <= 0.0 {
+
+
+
+
 
 
 
@@ -314,7 +626,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             }
+
+
+
+
 
 
 
@@ -322,7 +642,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
                 errors.push("Radius must be less than 5000mm".to_string());
+
+
+
+
 
 
 
@@ -330,7 +658,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         } else {
+
+
+
+
 
 
 
@@ -338,7 +674,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         }
+
+
+
+
 
 
 
@@ -346,7 +690,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         ValidationError {
+
+
+
+
 
 
 
@@ -354,7 +706,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             errors,
+
+
+
+
 
 
 
@@ -362,7 +722,19 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -374,7 +746,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let radius = params.radius.unwrap_or(50.0);
+
+
+
+
 
 
 
@@ -382,11 +762,23 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
-        let center = Point { x: radius + render_offset.x, y: radius + render_offset.y };
+
+
+
+
+        let _center = Point { x: radius + render_offset.x, y: radius + render_offset.y };
+
+
+
+
 
 
 
         
+
+
+
+
 
 
 
@@ -394,7 +786,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         let diameter_offset = (diameter * 0.08).max(5.0).min(30.0);
+
+
+
+
 
 
 
@@ -402,9 +802,19 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         // Create base dimensions (before transformation)
 
+
+
         let base_dimensions = vec![
+
+
+
+
 
 
 
@@ -412,7 +822,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
             Dimension {
+
+
+
+
 
 
 
@@ -420,7 +838,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
                 end_point: Point { x: radius + render_offset.x, y: diameter - diameter_offset + render_offset.y },
+
+
+
+
 
 
 
@@ -428,7 +854,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
                 value: diameter,
+
+
+
+
 
 
 
@@ -436,7 +870,15 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
                 orientation: DimensionOrientation::Vertical,
+
+
+
+
 
 
 
@@ -444,147 +886,319 @@ impl ShapeGeometry for CircleGeometry {
 
 
 
+
+
+
+
         ];
+
+
 
         
 
-        // Apply rotation transformation if needed
 
-        if transform.rotation != 0.0 {
+
+        // Apply transformation if needed (rotation or flips)
+
+
+
+        if transform.rotation != 0.0 || transform.flip_x || transform.flip_y {
+
+
 
             let center = self.get_rotation_center(params);
 
+
+
             let adjusted_center = Point {
+
+
 
                 x: center.x + render_offset.x,
 
+
+
                 y: center.y + render_offset.y,
+
+
 
             };
 
+
+
             
+
+
 
             base_dimensions.into_iter().map(|mut dim| {
 
+
+
                 dim.start_point = self.transform_point(&dim.start_point, &adjusted_center, transform);
+
+
 
                 dim.end_point = self.transform_point(&dim.end_point, &adjusted_center, transform);
 
+
+
                 dim.text_position = self.transform_point(&dim.text_position, &adjusted_center, transform);
+
+
 
                 
 
-                // Update dimension orientation based on rotation
+
+
+                // Update dimension orientation based on rotation and flips
+
+
 
                 let rotation_degrees = transform.rotation;
 
+
+
                 let normalized_rotation = rotation_degrees % 360.0;
+
+
 
                 
 
-                if (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
 
-                   (normalized_rotation >= 225.0 && normalized_rotation < 315.0) {
 
-                    // Swap orientations for 90° and 270° rotations
+                // Check if orientation should change (90°/270° rotation or X/Y flip)
+
+
+
+                let should_swap_orientation = 
+
+
+
+                    (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
+
+
+
+                    (normalized_rotation >= 225.0 && normalized_rotation < 315.0) ||
+
+
+
+                    transform.flip_x ||
+
+
+
+                    transform.flip_y;
+
+
+
+                
+
+
+
+                if should_swap_orientation {
+
+
+
+                    // Swap orientations for 90° and 270° rotations, or when flipped
+
+
 
                     match dim.orientation {
 
+
+
                         DimensionOrientation::Horizontal => dim.orientation = DimensionOrientation::Vertical,
+
+
 
                         DimensionOrientation::Vertical => dim.orientation = DimensionOrientation::Horizontal,
 
+
+
                         _ => {}
+
+
 
                     }
 
+
+
                 }
+
+
 
                 
 
+
+
                 dim
+
+
 
             }).collect()
 
+
+
         } else {
 
+
+
             base_dimensions
+
+
 
         }
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
     fn transform_point(&self, point: &Point, center: &Point, transform: &Transform) -> Point {
 
+
+
         let mut x = point.x;
+
+
 
         let mut y = point.y;
 
 
 
+
+
+
+
         // Apply rotation
+
+
 
         if transform.rotation != 0.0 {
 
+
+
             let angle_rad = (transform.rotation * std::f64::consts::PI) / 180.0;
+
+
 
             let cos_a = angle_rad.cos();
 
+
+
             let sin_a = angle_rad.sin();
 
+
+
             
+
+
 
             let rel_x = x - center.x;
 
+
+
             let rel_y = y - center.y;
+
+
 
             
 
+
+
             x = rel_x * cos_a - rel_y * sin_a + center.x;
+
+
 
             y = rel_x * sin_a + rel_y * cos_a + center.y;
 
+
+
         }
+
+
+
+
 
 
 
         // Apply flips
 
+
+
         if transform.flip_x {
+
+
 
             x = 2.0 * center.x - x;
 
+
+
         }
+
+
 
         if transform.flip_y {
 
+
+
             y = 2.0 * center.y - y;
 
+
+
         }
+
+
+
+
 
 
 
         Point { x, y }
 
+
+
     }
+
+
+
+
 
 
 
     fn get_rotation_center(&self, params: &ShapeParameters) -> Point {
 
+
+
         let radius = params.radius.unwrap_or(50.0);
 
+
+
         Point { x: radius, y: radius }
+
+
 
     }
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 

@@ -224,6 +224,10 @@
   margin-left: var(--spacing-md);
 }
 
+.space-y-2 > * + * {
+  margin-top: var(--spacing-sm);
+}
+
 .space-y-3 > * + * {
   margin-top: var(--spacing-md);
 }

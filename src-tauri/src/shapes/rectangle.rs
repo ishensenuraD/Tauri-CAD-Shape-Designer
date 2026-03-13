@@ -6,7 +6,15 @@ use crate::shapes::{BoundingBox, Point, ShapeGeometry, ShapeParameters, Validati
 
 
 
+
+
+
+
 pub struct RectangleGeometry;
+
+
+
+
 
 
 
@@ -18,7 +26,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
     fn generate_path(&self, params: &ShapeParameters) -> String {
+
+
 
 
 
@@ -26,7 +38,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let height = params.height.unwrap_or(100.0);
+
+
 
 
 
@@ -34,7 +50,13 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
     }
+
+
+
+
 
 
 
@@ -46,11 +68,19 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let width = params.width.unwrap_or(100.0);
 
 
 
+
+
         let height = params.height.unwrap_or(100.0);
+
+
+
+        
 
 
 
@@ -62,7 +92,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             min_x: 0.0,
+
+
 
 
 
@@ -70,7 +104,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             max_x: width,
+
+
 
 
 
@@ -78,7 +116,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             width,
+
+
 
 
 
@@ -86,11 +128,19 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         }
 
 
 
+
+
     }
+
+
+
+
 
 
 
@@ -102,7 +152,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let width = params.width.unwrap_or(100.0);
+
+
 
 
 
@@ -110,11 +164,19 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         width * height
 
 
 
+
+
     }
+
+
+
+
 
 
 
@@ -126,7 +188,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let width = params.width.unwrap_or(100.0);
+
+
 
 
 
@@ -134,11 +200,19 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         2.0 * (width + height)
 
 
 
+
+
     }
+
+
+
+
 
 
 
@@ -150,7 +224,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let width = params.width.unwrap_or(100.0);
+
+
 
 
 
@@ -158,7 +236,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         Point {
+
+
 
 
 
@@ -166,7 +248,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             y: height / 2.0,
+
+
 
 
 
@@ -174,7 +260,13 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
     }
+
+
+
+
 
 
 
@@ -186,11 +278,19 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let width = params.width.unwrap_or(100.0);
 
 
 
+
+
         let height = params.height.unwrap_or(100.0);
+
+
+
+        
 
 
 
@@ -202,7 +302,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             Point { x: 0.0, y: 0.0 },           // Top-left
+
+
 
 
 
@@ -210,7 +314,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             Point { x: width, y: height },      // Bottom-right
+
+
 
 
 
@@ -218,11 +326,19 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         ]
 
 
 
+
+
     }
+
+
+
+
 
 
 
@@ -234,7 +350,13 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         let mut errors = Vec::new();
+
+
+
+        
 
 
 
@@ -246,7 +368,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             if width <= 0.0 {
+
+
 
 
 
@@ -254,7 +380,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             }
+
+
 
 
 
@@ -262,7 +392,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
                 errors.push("Width must be less than 10000mm".to_string());
+
+
 
 
 
@@ -270,7 +404,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         } else {
+
+
 
 
 
@@ -278,7 +416,13 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         }
+
+
+
+        
 
 
 
@@ -290,7 +434,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             if height <= 0.0 {
+
+
 
 
 
@@ -298,7 +446,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             }
+
+
 
 
 
@@ -306,7 +458,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
                 errors.push("Height must be less than 10000mm".to_string());
+
+
 
 
 
@@ -314,7 +470,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         } else {
+
+
 
 
 
@@ -322,7 +482,13 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         }
+
+
+
+        
 
 
 
@@ -334,7 +500,11 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
             is_valid: errors.is_empty(),
+
+
 
 
 
@@ -342,227 +512,341 @@ impl ShapeGeometry for RectangleGeometry {
 
 
 
+
+
         }
 
 
 
+
+
     }
+
+
 
 
 
     fn get_dimensions(&self, params: &ShapeParameters, render_offset: &Point, transform: &Transform) -> Vec<Dimension> {
 
+
         let width = params.width.unwrap_or(100.0);
+
 
         let height = params.height.unwrap_or(100.0);
 
         
 
+        
+
         // Dynamic offset calculation - 8% of dimension with bounds
 
+
         let width_offset = (width * 0.08).max(5.0).min(30.0);
+
 
         let height_offset = (height * 0.08).max(5.0).min(30.0);
 
         
 
+        
+
         // Create base dimensions (before transformation)
+
 
         let base_dimensions = vec![
 
+
             // Width dimension (horizontal, above the shape)
+
 
             Dimension {
 
+
                 start_point: Point {
+
 
                     x: width*0.05 + render_offset.x,
 
+
                     y: -width_offset + render_offset.y,
+
 
                 },
 
+
                 end_point: Point {
+
 
                     x: width *0.95 + render_offset.x,
 
+
                     y: -width_offset + render_offset.y,
+
 
                 },
 
+
                 text_position: Point {
+
 
                     x: width / 2.0 + render_offset.x,
 
+
                     y: -width_offset +19.0 + render_offset.y,
 
+
                 },
+
 
                 value: width,
 
+
                 label: format!("{:.0}mm", width),
+
 
                 orientation: DimensionOrientation::Horizontal,
 
+
             },
+
 
             // Height dimension (vertical, left of the shape)
 
+
             Dimension {
+
 
                 start_point: Point {
 
+
                     x: -height_offset + render_offset.x,
+
 
                     y: 0.0 + render_offset.y,
 
+
                 },
+
 
                 end_point: Point {
 
+
                     x: -height_offset + render_offset.x,
+
 
                     y: height + render_offset.y,
 
+
                 },
+
 
                 text_position: Point {
 
+
                     x: -height_offset +40.0 + render_offset.x,
+
 
                     y: height / 2.0 + render_offset.y,
 
+
                 },
+
 
                 value: height,
 
+
                 label: format!("{:.0}mm", height),
+
 
                 orientation: DimensionOrientation::Vertical,
 
+
             },
+
 
         ];
 
         
 
+        
+
         // Apply rotation transformation if needed
+
 
         if transform.rotation != 0.0 {
 
+
             let center = self.get_rotation_center(params);
+
 
             let adjusted_center = Point {
 
+
                 x: center.x + render_offset.x,
 
+
                 y: center.y + render_offset.y,
+
 
             };
 
             
 
+            
+
             base_dimensions.into_iter().map(|mut dim| {
+
 
                 dim.start_point = self.transform_point(&dim.start_point, &adjusted_center, transform);
 
+
                 dim.end_point = self.transform_point(&dim.end_point, &adjusted_center, transform);
+
 
                 dim.text_position = self.transform_point(&dim.text_position, &adjusted_center, transform);
 
                 
 
+                
+
                 // Update dimension orientation based on rotation
 
+
                 let rotation_degrees = transform.rotation;
+
 
                 let normalized_rotation = rotation_degrees % 360.0;
 
                 
 
+                
+
                 if (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
+
 
                    (normalized_rotation >= 225.0 && normalized_rotation < 315.0) {
 
+
                     // Swap orientations for 90° and 270° rotations
+
 
                     match dim.orientation {
 
+
                         DimensionOrientation::Horizontal => dim.orientation = DimensionOrientation::Vertical,
+
 
                         DimensionOrientation::Vertical => dim.orientation = DimensionOrientation::Horizontal,
 
+
                         _ => {}
 
+
                     }
+
 
                 }
 
                 
 
+                
+
                 dim
+
 
             }).collect()
 
+
         } else {
+
 
             base_dimensions
 
+
         }
+
 
     }
 
     
 
+    
+
     fn transform_point(&self, point: &Point, center: &Point, transform: &Transform) -> Point {
 
+
         let mut x = point.x;
+
 
         let mut y = point.y;
 
 
 
+
+
         // Apply rotation
+
 
         if transform.rotation != 0.0 {
 
+
             let angle_rad = (transform.rotation * std::f64::consts::PI) / 180.0;
 
+
             let cos_a = angle_rad.cos();
+
 
             let sin_a = angle_rad.sin();
 
             
 
+            
+
             let rel_x = x - center.x;
+
 
             let rel_y = y - center.y;
 
             
 
+            
+
             x = rel_x * cos_a - rel_y * sin_a + center.x;
 
+
             y = rel_x * sin_a + rel_y * cos_a + center.y;
+
 
         }
 
 
 
+
+
         Point { x, y }
 
+
     }
+
+
 
 
 
     fn get_rotation_center(&self, params: &ShapeParameters) -> Point {
 
+
         // For rectangle, use the same center as the shape
 
+
         self.get_center(params)
+
 
     }
 
 
 
+
+
 }
+
 

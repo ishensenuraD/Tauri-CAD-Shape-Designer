@@ -79,13 +79,14 @@ fn render_shape_to_png(request: RenderRequest) -> Result<RenderResponse, String>
         }
     };
 
-    // Render to PNG
+    // Render to PNG (without dimensions - Canvas handles them)
     match renderer.render_shape_to_png(
         &request.shape_type,
         &request.parameters,
         &request.transform,
         request.width,
         request.height,
+        false, // Don't include dimensions - Canvas will render them
     ) {
         Ok(png_data) => {
             let base64_string = base64::engine::general_purpose::STANDARD.encode(&png_data);
@@ -110,7 +111,7 @@ fn render_shape_to_png(request: RenderRequest) -> Result<RenderResponse, String>
 #[tauri::command]
 fn render_shape_to_base64(shape_type: String, parameters: ShapeParameters, transform: Transform, width: u32, height: u32) -> Result<String, String> {
     let renderer = ImageRenderer::new();
-    renderer.render_shape_to_base64(&shape_type, &parameters, &transform, width, height)
+    renderer.render_shape_to_base64(&shape_type, &parameters, &transform, width, height, false)
 }
 
 #[tauri::command]
@@ -149,6 +150,105 @@ fn generate_dxf_detailed(request: DxfRequest) -> Result<DxfResponse, String> {
     }
 }
 
+#[tauri::command]
+fn generate_png_basic(request: RenderRequest) -> Result<RenderResponse, String> {
+    let renderer = ImageRenderer::new();
+    
+    // First get shape info
+    let generator = SvgGenerator::new();
+    let shape_info = match generator.generate_shape_info(&request.shape_type, &request.parameters, &request.transform) {
+        Ok(info) => info,
+        Err(e) => {
+            return Ok(RenderResponse {
+                success: false,
+                data: None,
+                base64: None,
+                shape_info: None,
+                error: Some(e),
+            });
+        }
+    };
+
+    // Render basic PNG (shape only, no dimensions)
+    match renderer.render_shape_to_png(
+        &request.shape_type,
+        &request.parameters,
+        &request.transform,
+        request.width,
+        request.height,
+        false, // Don't include dimensions for basic PNG
+    ) {
+        Ok(png_data) => {
+            let base64_string = base64::engine::general_purpose::STANDARD.encode(&png_data);
+            Ok(RenderResponse {
+                success: true,
+                data: Some(png_data),
+                base64: Some(format!("data:image/png;base64,{}", base64_string)),
+                shape_info: Some(shape_info),
+                error: None,
+            })
+        }
+        Err(e) => Ok(RenderResponse {
+            success: false,
+            data: None,
+            base64: None,
+            shape_info: Some(shape_info),
+            error: Some(e),
+        }),
+    }
+}
+
+#[tauri::command]
+fn generate_png_detailed(request: RenderRequest) -> Result<RenderResponse, String> {
+    let renderer = ImageRenderer::new();
+    
+    // First get shape info with dimensions
+    let generator = SvgGenerator::new();
+    let shape_info = match generator.generate_shape_info(&request.shape_type, &request.parameters, &request.transform) {
+        Ok(info) => info,
+        Err(e) => {
+            return Ok(RenderResponse {
+                success: false,
+                data: None,
+                base64: None,
+                shape_info: None,
+                error: Some(e),
+            });
+        }
+    };
+
+    // For detailed PNG, we'll render a larger image to include dimensions
+    let detailed_width = request.width + 200; // Extra space for dimensions
+    let detailed_height = request.height + 200;
+    
+    match renderer.render_shape_to_png(
+        &request.shape_type,
+        &request.parameters,
+        &request.transform,
+        detailed_width,
+        detailed_height,
+        true, // Include dimensions for detailed PNG
+    ) {
+        Ok(png_data) => {
+            let base64_string = base64::engine::general_purpose::STANDARD.encode(&png_data);
+            Ok(RenderResponse {
+                success: true,
+                data: Some(png_data),
+                base64: Some(format!("data:image/png;base64,{}", base64_string)),
+                shape_info: Some(shape_info),
+                error: None,
+            })
+        }
+        Err(e) => Ok(RenderResponse {
+            success: false,
+            data: None,
+            base64: None,
+            shape_info: Some(shape_info),
+            error: Some(e),
+        }),
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -162,7 +262,9 @@ pub fn run() {
             render_shape_to_png,
             render_shape_to_base64,
             generate_dxf_basic,
-            generate_dxf_detailed
+            generate_dxf_detailed,
+            generate_png_basic,
+            generate_png_detailed
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

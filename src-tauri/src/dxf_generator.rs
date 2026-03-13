@@ -21,7 +21,7 @@ impl DxfGenerator {
         
         // Get shape geometry
         let geometry = self.get_geometry(shape_type)?;
-        let mut shape_info = self.create_shape_info(&geometry, params)?;
+        let mut shape_info = self.create_shape_info(&geometry, params, transform)?;
         shape_info.shape_type = shape_type.to_string();
         
         // Add shape outline
@@ -40,7 +40,7 @@ impl DxfGenerator {
         
         // Get shape geometry
         let geometry = self.get_geometry(shape_type)?;
-        let mut shape_info = self.create_shape_info(&geometry, params)?;
+        let mut shape_info = self.create_shape_info(&geometry, params, transform)?;
         shape_info.shape_type = shape_type.to_string();
         
         // Add shape outline
@@ -69,7 +69,7 @@ impl DxfGenerator {
         }
     }
 
-    fn create_shape_info(&self, geometry: &Box<dyn ShapeGeometry>, params: &ShapeParameters) -> Result<ShapeInfo, String> {
+    fn create_shape_info(&self, geometry: &Box<dyn ShapeGeometry>, params: &ShapeParameters, transform: &Transform) -> Result<ShapeInfo, String> {
         // Validate parameters first
         let validation = geometry.validate_parameters(params);
         if !validation.is_valid {
@@ -95,7 +95,7 @@ impl DxfGenerator {
             perimeter: geometry.get_perimeter(params),
             center,
             vertices: geometry.get_vertices(params),
-            dimensions: geometry.get_dimensions(params, &render_offset, &Transform { rotation: 0.0, flip_x: false, flip_y: false }),
+            dimensions: geometry.get_dimensions(params, &render_offset, transform),
             render_offset,
             svg_to_image_scale_x: 1.0, // DXF doesn't have scaling issues
             svg_to_image_scale_y: 1.0,
@@ -132,16 +132,17 @@ impl DxfGenerator {
         Ok(())
     }
 
-    fn add_dimensions(&self, drawing: &mut dxf::Drawing, shape_info: &ShapeInfo, transform: &Transform) -> Result<(), String> {
+    fn add_dimensions(&self, drawing: &mut dxf::Drawing, shape_info: &ShapeInfo, _transform: &Transform) -> Result<(), String> {
         for dimension in &shape_info.dimensions {
-            let transformed_start = self.transform_point(&dimension.start_point, &shape_info.center, transform);
-            let transformed_end = self.transform_point(&dimension.end_point, &shape_info.center, transform);
-            let transformed_text = self.transform_point(&dimension.text_position, &shape_info.center, transform);
+            // Dimensions are already transformed in get_dimensions, so use them directly
+            let start = &dimension.start_point;
+            let end = &dimension.end_point;
+            let text_pos = &dimension.text_position;
 
             // Add dimension lines
             let dim_line = dxf::entities::Line {
-                p1: dxf::Point::new(transformed_start.x, transformed_start.y, 0.0),
-                p2: dxf::Point::new(transformed_end.x, transformed_end.y, 0.0),
+                p1: dxf::Point::new(start.x, start.y, 0.0),
+                p2: dxf::Point::new(end.x, end.y, 0.0),
                 ..Default::default()
             };
             let dim_line_entity = dxf::entities::Entity::new(dxf::entities::EntityType::Line(dim_line));
@@ -151,7 +152,7 @@ impl DxfGenerator {
 
             // Add dimension text
             let text = dxf::entities::Text {
-                location: dxf::Point::new(transformed_text.x, transformed_text.y, 0.0),
+                location: dxf::Point::new(text_pos.x, text_pos.y, 0.0),
                 value: dimension.label.clone(),
                 text_height: 15.0, // 15mm text height to match SVG proportions
                 rotation: match dimension.orientation {

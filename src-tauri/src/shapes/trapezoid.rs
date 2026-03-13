@@ -360,11 +360,9 @@ impl ShapeGeometry for TrapezoidGeometry {
 
         ];
 
-        
+        // Apply transformation if needed (rotation or flips)
 
-        // Apply rotation transformation if needed
-
-        if transform.rotation != 0.0 {
+        if transform.rotation != 0.0 || transform.flip_x || transform.flip_y {
 
             let center = self.get_rotation_center(params);
 
@@ -388,30 +386,24 @@ impl ShapeGeometry for TrapezoidGeometry {
 
                 
 
-                // Update dimension orientation based on rotation
-
+                // Update dimension orientation based on rotation and flips
                 let rotation_degrees = transform.rotation;
-
                 let normalized_rotation = rotation_degrees % 360.0;
-
                 
-
-                if (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
-
-                   (normalized_rotation >= 225.0 && normalized_rotation < 315.0) {
-
-                    // Swap orientations for 90° and 270° rotations
-
+                // Check if orientation should change (90°/270° rotation or X/Y flip)
+                let should_swap_orientation = 
+                    (normalized_rotation >= 45.0 && normalized_rotation < 135.0) || 
+                    (normalized_rotation >= 225.0 && normalized_rotation < 315.0) ||
+                    transform.flip_x ||
+                    transform.flip_y;
+                
+                if should_swap_orientation {
+                    // Swap orientations for 90° and 270° rotations, or when flipped
                     match dim.orientation {
-
                         DimensionOrientation::Horizontal => dim.orientation = DimensionOrientation::Vertical,
-
                         DimensionOrientation::Vertical => dim.orientation = DimensionOrientation::Horizontal,
-
                         _ => {}
-
                     }
-
                 }
 
                 
